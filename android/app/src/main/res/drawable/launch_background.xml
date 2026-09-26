@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Brand night background so the native launch screen matches the Flutter
+     splash and there is no white flash on cold start. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/safar_launch_bg" />
+</layer-list>

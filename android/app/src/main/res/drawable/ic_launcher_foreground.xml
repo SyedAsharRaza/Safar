@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bahawalpur Safar mark: a route line threading through a palace arch, with a
+  streetlight glow. Drawn as a vector so no raster assets are needed.
+  Adaptive-icon foregrounds are 108x108dp with the inner 72x72dp safe zone.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Arch -->
+    <path
+        android:strokeColor="#8CFFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M 38,72 L 38,52 A 16,16 0 0 1 70,52 L 70,72" />
+
+    <!-- Route line -->
+    <path
+        android:strokeColor="#F2A33C"
+        android:strokeWidth="8.5"
+        android:strokeLineCap="round"
+        android:pathData="M 30,66 Q 46,68 52,56 Q 58,43 78,44" />
+
+    <!-- Destination dot -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M 78,44 m -5,0 a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0" />
+
+    <!-- Streetlight glow -->
+    <path
+        android:fillColor="#4DF2A33C"
+        android:pathData="M 54,42 m -9,0 a 9,9 0 1,0 18,0 a 9,9 0 1,0 -18,0" />
+</vector>

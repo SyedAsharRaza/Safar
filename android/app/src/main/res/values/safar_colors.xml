@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand night. Matches the Flutter splash screen so there is no flash
+         of white between the native launch screen and the app. -->
+    <color name="safar_launch_bg">#0B1B31</color>
+</resources>
