@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_constants.dart';
+import '../data/api/api_config.dart';
+import '../data/api/api_exception.dart';
+import '../data/api/safar_api.dart';
 import '../data/mock/bahawalpur_geo.dart';
 import '../data/mock/mock_reports.dart';
 import '../data/services/awareness_engine.dart';
@@ -20,10 +23,23 @@ enum LoadState { initial, loading, ready, error }
 /// In production this is a Firestore stream; here it is an in-memory list with
 /// simulated latency so the UI's loading, empty and error states are real.
 class ReportsProvider extends ChangeNotifier {
-  ReportsProvider({MockAiClassifier? classifier})
-      : _classifier = classifier ?? MockAiClassifier();
+  ReportsProvider({MockAiClassifier? classifier, SafarApi? api})
+      : _classifier = classifier ?? MockAiClassifier(),
+        _api = api ?? SafarApi();
 
   final MockAiClassifier _classifier;
+  final SafarApi _api;
+
+  SafarApi get api => _api;
+
+  /// True when the last load came from the backend rather than seeded data.
+  bool _liveData = false;
+  bool get isLiveData => _liveData;
+
+  /// Set when the backend was tried and failed, so the UI can say why it is
+  /// showing demonstration data instead of pretending nothing happened.
+  String? _backendNotice;
+  String? get backendNotice => _backendNotice;
   final math.Random _random = math.Random();
 
   List<SafetyReport> _reports = [];
@@ -130,11 +146,50 @@ class ReportsProvider extends ChangeNotifier {
   }) async {
     _state = LoadState.loading;
     _error = null;
+    _backendNotice = null;
     notifyListeners();
+
+    // --- Real backend ------------------------------------------------------
+    // Seeded data is the fallback, never silently preferred: if the API is
+    // reachable it wins, and if it is not the UI says so rather than passing
+    // demonstration rows off as live ones.
+    if (ApiConfig.useBackend && !offline && !failFirst && !empty) {
+      try {
+        if (!await _api.restoreSession()) {
+          await _api.signInAnonymously();
+        }
+        final fetched = await _api.fetchReports(limit: 100);
+        final mine = await _api.fetchMyReports().catchError(
+              (_) => <SafetyReport>[],
+            );
+
+        final byId = {for (final r in fetched) r.id: r};
+        for (final r in mine) {
+          byId[r.id] = r;
+        }
+
+        _reports = byId.values.toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        _liveData = true;
+        _state = LoadState.ready;
+        notifyListeners();
+        return;
+      } on ApiException catch (e) {
+        // Fall through to seeded data — a hackathon demo must not die because
+        // the venue wifi did.
+        _backendNotice = e.isNetwork
+            ? 'Could not reach the server. Showing demonstration signals.'
+            : e.message;
+      } catch (_) {
+        _backendNotice = 'Showing demonstration signals.';
+      }
+    }
 
     await Future<void>.delayed(
       Duration(milliseconds: 650 + _random.nextInt(450)),
     );
+
+    _liveData = false;
 
     if (offline) {
       // Offline still works: the prototype keeps a local copy, as the
@@ -172,6 +227,17 @@ class ReportsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Adds or replaces a report that arrived via push.
+  void upsert(SafetyReport report) {
+    final i = _reports.indexWhere((r) => r.id == report.id);
+    if (i == -1) {
+      _reports = [report, ..._reports];
+    } else {
+      _reports = [..._reports]..[i] = report;
+    }
+    notifyListeners();
+  }
+
   void reseed() {
     _reports = MockReports.seed();
     _state = LoadState.ready;
@@ -205,7 +271,20 @@ class ReportsProvider extends ChangeNotifier {
     SpecificType? userSelectedType,
     required GeoPoint at,
     bool forceFailure = false,
-  }) {
+  }) async {
+    // The backend holds the Gemini keys; the app never sees them.
+    if (_liveData && ApiConfig.useBackend && !forceFailure) {
+      try {
+        final json = await _api.classify(
+          text: text,
+          userSelectedType: userSelectedType,
+        );
+        return aiResultFromJson(json);
+      } on ApiException {
+        // Fall through to the on-device classifier.
+      }
+    }
+
     _classifier.forceFailure = forceFailure;
     return _classifier.classify(
       text: text,
@@ -236,6 +315,38 @@ class ReportsProvider extends ChangeNotifier {
     bool approximate = false,
     bool classifiedByAi = true,
   }) async {
+    // Publish to the backend when we are on live data, so the report is real
+    // and reaches other travellers' devices as a push.
+    if (_liveData && ApiConfig.useBackend) {
+      try {
+        final response = await _api.publishReport(
+          specificType: result.specificType,
+          location: location,
+          description: description,
+          safePublicText: result.safePublicText,
+          severity: result.severity,
+          confidence: result.confidence,
+          language: result.language,
+          approximate: approximate,
+          classifiedByAi: classifiedByAi,
+        );
+        final published = reportFromJson(
+          response['report'] as Map<String, dynamic>,
+          isMine: true,
+        );
+        _reports = [published, ..._reports];
+        _submissionTimes.add(DateTime.now());
+        notifyListeners();
+        return published;
+      } on ApiException catch (e) {
+        // Keep the reporter's work rather than losing it to a network blip:
+        // store locally and tell them it is not published.
+        _backendNotice = e.isRateLimited
+            ? e.message
+            : 'Saved on this device — could not reach the server.';
+      }
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 700));
 
     final now = DateTime.now();
@@ -270,6 +381,29 @@ class ReportsProvider extends ChangeNotifier {
 
   /// A second traveller agreeing with a report. Corroboration is what moves a
   /// signal from "unverified" to "confirmed" — never an admin decision.
+  Future<void> confirmRemote(String reportId) async {
+    if (!_liveData || !ApiConfig.useBackend) return;
+    try {
+      final updated = await _api.confirmReport(reportId);
+      final i = _reports.indexWhere((r) => r.id == reportId);
+      if (i != -1) {
+        _reports = [..._reports]..[i] = updated;
+        notifyListeners();
+      }
+    } on ApiException {
+      // The local optimistic update already happened; nothing further to do.
+    }
+  }
+
+  Future<void> withdrawRemote(String reportId) async {
+    if (!_liveData || !ApiConfig.useBackend) return;
+    try {
+      await _api.withdrawReport(reportId);
+    } on ApiException {
+      // Local state already reflects the withdrawal.
+    }
+  }
+
   void confirm(String reportId) {
     _update(reportId, (r) {
       final count = r.confirmationCount + 1;

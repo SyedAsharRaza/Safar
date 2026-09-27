@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +49,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     );
     if (!ok || !mounted) return;
 
-    context.read<ReportsProvider>().confirm(report.id);
+    final reports = context.read<ReportsProvider>();
+    reports.confirm(report.id);
+    unawaited(reports.confirmRemote(report.id));
     context.read<AppState>().recordConfirmation();
     setState(() => _confirmed = true);
     Toast.show(
@@ -88,7 +92,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
       icon: Icons.undo_rounded,
     );
     if (!ok || !mounted) return;
-    context.read<ReportsProvider>().withdraw(report.id);
+    final reports = context.read<ReportsProvider>();
+    reports.withdraw(report.id);
+    unawaited(reports.withdrawRemote(report.id));
     Toast.show(context, 'Your report has been withdrawn.');
   }
 

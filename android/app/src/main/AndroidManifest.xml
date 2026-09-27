@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Android 13+ requires this at runtime. Without it notifications are
+         silently dropped: no error, no crash, nothing appears. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="Bahawalpur Safar"
         android:name="${applicationName}"
@@ -32,6 +36,15 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+        <!-- Channel used for community-signal pushes; must match the one the
+             backend sends with and the one the app creates at startup. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="bwp_reports" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/safar_notification" />
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

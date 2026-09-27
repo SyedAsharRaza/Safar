@@ -167,10 +167,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? '${reports.live.length} live in the demo area'
                       : null,
                   padding: EdgeInsets.zero,
-                  action: const DemoDataBadge(dense: true),
+                  action: reports.isLiveData
+                      ? Pill(
+                          label: 'Live',
+                          icon: Icons.cloud_done_outlined,
+                          color: AppColors.awarenessLow,
+                          dense: true,
+                        )
+                      : const DemoDataBadge(dense: true),
                 ),
               ),
             ),
+
+            // If the backend was tried and failed, say so rather than passing
+            // demonstration rows off as live community signals.
+            if (reports.backendNotice != null)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(gutter, 0, gutter, Gap.md),
+                  child: InfoPanel(
+                    text: reports.backendNotice!,
+                    icon: Icons.cloud_off_outlined,
+                    tone: AppColors.awarenessModerate,
+                    dense: true,
+                  ),
+                ),
+              ),
 
             _signals(context, reports, gutter),
 

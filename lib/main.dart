@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
+import 'data/push/push_service.dart';
 import 'core/theme/app_theme.dart';
 import 'screens/onboarding/splash_screen.dart';
 import 'state/app_state.dart';
@@ -30,11 +33,18 @@ void main() {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const BahawalpurSafarApp());
+  // Push is an enhancement: if Firebase is missing or the permission is
+  // refused, the app must still plan routes, so this never blocks startup.
+  final push = PushService();
+  unawaited(push.initialise());
+
+  runApp(BahawalpurSafarApp(push: push));
 }
 
 class BahawalpurSafarApp extends StatelessWidget {
-  const BahawalpurSafarApp({super.key});
+  const BahawalpurSafarApp({super.key, required this.push});
+
+  final PushService push;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +56,12 @@ class BahawalpurSafarApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CheckinProvider()),
         ChangeNotifierProvider(create: (_) => PlacesProvider()),
         ChangeNotifierProvider(create: (_) => NotificationsProvider()),
+        Provider<PushService>.value(value: push),
       ],
+      builder: (context, child) {
+        // Route incoming pushes into the in-app feed the Activity tab shows.
+        return _PushBridge(push: push, child: child!);
+      },
       child: Consumer<AppState>(
         builder: (context, app, _) => MaterialApp(
           title: AppText.appName,
@@ -71,4 +86,41 @@ class BahawalpurSafarApp extends StatelessWidget {
       ),
     );
   }
+}
+
+
+/// Feeds push notifications into [NotificationsProvider] so they appear in the
+/// Activity tab, not just in the system tray.
+class _PushBridge extends StatefulWidget {
+  const _PushBridge({required this.push, required this.child});
+
+  final PushService push;
+  final Widget child;
+
+  @override
+  State<_PushBridge> createState() => _PushBridgeState();
+}
+
+class _PushBridgeState extends State<_PushBridge> {
+  StreamSubscription<void>? _incoming;
+
+  @override
+  void initState() {
+    super.initState();
+    _incoming = widget.push.incoming.listen((notification) {
+      if (!mounted) return;
+      context.read<NotificationsProvider>().push(notification);
+      // A new signal may change routes the user is looking at, so refresh.
+      context.read<ReportsProvider>().refresh();
+    });
+  }
+
+  @override
+  void dispose() {
+    _incoming?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

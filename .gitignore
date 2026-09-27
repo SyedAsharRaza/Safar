@@ -46,3 +46,8 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Firebase config — regenerate from the console rather than committing
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+*adminsdk*.json

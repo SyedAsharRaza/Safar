@@ -137,6 +137,62 @@ class DemoPanelScreen extends StatelessWidget {
             ],
           ),
 
+          // --- Backend ---------------------------------------------------------
+          const SizedBox(height: Gap.xl),
+          SettingGroup(
+            title: 'Backend',
+            children: [
+              SettingRow(
+                title: reports.isLiveData ? 'Connected' : 'Demonstration data',
+                subtitle: reports.isLiveData
+                    ? 'Reports are coming from the live API'
+                    : reports.backendNotice ?? 'Using seeded signals on device',
+                icon: reports.isLiveData
+                    ? Icons.cloud_done_outlined
+                    : Icons.cloud_off_outlined,
+                tone: reports.isLiveData
+                    ? AppColors.awarenessLow
+                    : AppColors.awarenessModerate,
+                onTap: () async {
+                  await reports.load(offline: app.offline);
+                  if (context.mounted) {
+                    Toast.show(
+                      context,
+                      reports.isLiveData
+                          ? 'Connected to the live API.'
+                          : 'Still on demonstration data.',
+                      tone: reports.isLiveData
+                          ? ToastTone.success
+                          : ToastTone.warning,
+                    );
+                  }
+                },
+              ),
+              SettingRow(
+                title: 'Send a test notification',
+                subtitle: 'Pushes to every subscribed device',
+                icon: Icons.notifications_active_outlined,
+                tone: AppColors.brand,
+                onTap: () async {
+                  try {
+                    await reports.api.sendTestNotification();
+                    if (context.mounted) {
+                      Toast.show(
+                        context,
+                        'Test notification sent.',
+                        tone: ToastTone.success,
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      Toast.show(context, '$e', tone: ToastTone.danger);
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+
           // --- Map surface ----------------------------------------------------
           const SizedBox(height: Gap.xl),
           Text(

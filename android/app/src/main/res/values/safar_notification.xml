@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Accent applied to community-signal notifications. -->
+    <color name="safar_notification">#2563A8</color>
+</resources>
