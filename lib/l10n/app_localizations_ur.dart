@@ -127,7 +127,7 @@ class LUr extends L {
   String get demoData => 'نمونہ ڈیٹا';
 
   @override
-  String get live => 'براہِ راست';
+  String get live => 'منسلک';
 
   @override
   String get awarenessLow => 'کم احتیاط درکار';
@@ -525,7 +525,7 @@ class LUrLatn extends LUr {
   String get demoData => 'Demo data';
 
   @override
-  String get live => 'Live';
+  String get live => 'Connected';
 
   @override
   String get awarenessLow => 'Kam ehtiyaat darkar';

@@ -331,7 +331,7 @@ abstract class L {
   /// No description provided for @live.
   ///
   /// In en, this message translates to:
-  /// **'Live'**
+  /// **'Connected'**
   String get live;
 
   /// No description provided for @awarenessLow.

@@ -57,3 +57,4 @@ android/key.properties
 *.jks
 *.keystore
 !android/app/debug.keystore
+android/safar-upload.jks

@@ -127,7 +127,7 @@ class LEn extends L {
   String get demoData => 'Demo data';
 
   @override
-  String get live => 'Live';
+  String get live => 'Connected';
 
   @override
   String get awarenessLow => 'Low reported caution';

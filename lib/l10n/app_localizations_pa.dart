@@ -127,7 +127,7 @@ class LPa extends L {
   String get demoData => 'نمونہ ڈیٹا';
 
   @override
-  String get live => 'لائیو';
+  String get live => 'جُڑیا ہویا';
 
   @override
   String get awarenessLow => 'گھٹ احتیاط لوڑیندی';
