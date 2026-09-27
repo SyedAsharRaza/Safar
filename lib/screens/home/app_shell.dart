@@ -12,6 +12,7 @@ import '../explore/explore_screen.dart';
 import '../profile/profile_screen.dart';
 import '../report/report_flow_screen.dart';
 import 'home_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Lets any descendant switch tabs — used by home-screen shortcuts that point
 /// at the Map or Activity tabs.
@@ -129,7 +130,7 @@ class _ReportFab extends StatelessWidget {
               backgroundColor: context.scheme.primary,
               foregroundColor: Colors.white,
               shape: const RoundedRectangleBorder(borderRadius: Radii.allLg),
-              tooltip: 'Report a road condition',
+              tooltip: L.of(context).reportAction,
               child: const Icon(Icons.add_comment_rounded, size: 24),
             ),
           ),

@@ -14,6 +14,7 @@ import '../../widgets/common/feedback.dart';
 import '../../widgets/common/inputs.dart';
 import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/safar_map.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Presenter's control panel.
 ///
@@ -33,7 +34,7 @@ class DemoPanelScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Demo controls'),
+        title: Text(L.of(context).demoControls),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: () => Navigator.of(context).pop(),
@@ -42,12 +43,10 @@ class DemoPanelScreen extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.x4l),
         children: [
-          const InfoPanel(
-            title: 'For presenting, not for users',
+          InfoPanel(
+            title: L.of(context).presentingUsers,
             text:
-                'These switches exist so every state in the prototype can be '
-                'shown on demand. In a production build this screen would not '
-                'ship.',
+                L.of(context).theseSwitchesExistSoEvery,
             icon: Icons.slideshow_rounded,
             tone: AppColors.accentDeep,
           ),
@@ -55,7 +54,7 @@ class DemoPanelScreen extends StatelessWidget {
           // --- Persona ----------------------------------------------------------
           const SizedBox(height: Gap.xl),
           Text(
-            'User persona',
+            L.of(context).userPersona,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: Gap.sm),
@@ -67,11 +66,9 @@ class DemoPanelScreen extends StatelessWidget {
               app.setPersona(p);
               if (p == DemoPersona.firstTime) {
                 places.clearAll();
-                checkin.clearContacts();
                 context.read<NotificationsProvider>().clearAll();
               } else {
                 places.restoreSeed();
-                checkin.restoreContacts();
               }
               Toast.show(context, 'Switched to: ${p.label}');
             },
@@ -87,10 +84,10 @@ class DemoPanelScreen extends StatelessWidget {
           // --- Data states --------------------------------------------------------
           const SizedBox(height: Gap.xl),
           SettingGroup(
-            title: 'Community signal data',
+            title: L.of(context).communitySignalData,
             children: [
               SettingRow(
-                title: 'Reload seeded signals',
+                title: L.of(context).reloadSeededSignals,
                 subtitle: '${reports.live.length} live right now',
                 icon: Icons.refresh_rounded,
                 onTap: () {
@@ -100,8 +97,8 @@ class DemoPanelScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Empty the map',
-                subtitle: 'Shows every "no data" and empty state',
+                title: L.of(context).emptyMap,
+                subtitle: L.of(context).showsEveryNoDataEmpty,
                 icon: Icons.layers_clear_outlined,
                 onTap: () {
                   reports.clearAll();
@@ -113,8 +110,8 @@ class DemoPanelScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Force a load failure',
-                subtitle: 'Shows the error state with retry',
+                title: L.of(context).forceLoadFailure,
+                subtitle: L.of(context).showsErrorStateRetry,
                 icon: Icons.error_outline_rounded,
                 onTap: () async {
                   await reports.load(failFirst: true);
@@ -128,8 +125,8 @@ class DemoPanelScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Show expired reports',
-                subtitle: 'Greyed out, no effect on routing',
+                title: L.of(context).showExpiredReports,
+                subtitle: L.of(context).greyedOutNoEffectRouting,
                 icon: Icons.history_rounded,
                 switchValue: reports.includeExpired,
                 onSwitch: reports.setIncludeExpired,
@@ -140,7 +137,7 @@ class DemoPanelScreen extends StatelessWidget {
           // --- Backend ---------------------------------------------------------
           const SizedBox(height: Gap.xl),
           SettingGroup(
-            title: 'Backend',
+            title: L.of(context).backend,
             children: [
               SettingRow(
                 title: reports.isLiveData ? 'Connected' : 'Demonstration data',
@@ -169,8 +166,8 @@ class DemoPanelScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Send a test notification',
-                subtitle: 'Pushes to every subscribed device',
+                title: L.of(context).sendTestNotification,
+                subtitle: L.of(context).pushesEverySubscribedDevice,
                 icon: Icons.notifications_active_outlined,
                 tone: AppColors.brand,
                 onTap: () async {
@@ -196,7 +193,7 @@ class DemoPanelScreen extends StatelessWidget {
           // --- Map surface ----------------------------------------------------
           const SizedBox(height: Gap.xl),
           Text(
-            'Map surface',
+            L.of(context).mapSurface,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: Gap.sm),
@@ -220,12 +217,12 @@ class DemoPanelScreen extends StatelessWidget {
           // --- Failure simulation -------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'Failure paths',
+            title: L.of(context).failurePaths,
             children: [
               SettingRow(
-                title: 'Break the report classifier',
+                title: L.of(context).breakReportClassifier,
                 subtitle:
-                    'Next report falls back to manual category selection',
+                    L.of(context).nextReportFallsBackManual,
                 icon: Icons.auto_awesome_outlined,
                 tone: AppColors.awarenessElevated,
                 switchValue: app.simulateAiFailure,
@@ -240,8 +237,8 @@ class DemoPanelScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Simulate offline',
-                subtitle: 'Offline banner plus the cached-data path',
+                title: L.of(context).simulateOffline,
+                subtitle: L.of(context).offlineBannerPlusCachedData,
                 icon: Icons.wifi_off_rounded,
                 tone: AppColors.awarenessElevated,
                 switchValue: app.offline,
@@ -253,24 +250,17 @@ class DemoPanelScreen extends StatelessWidget {
           // --- Other states ---------------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'Other states',
+            title: L.of(context).otherStates,
             children: [
               SettingRow(
-                title: checkin.hasContacts
-                    ? 'Remove trusted contacts'
-                    : 'Restore trusted contacts',
+                title: L.of(context).clearTrustedContacts,
                 subtitle: checkin.hasContacts
-                    ? '${checkin.contacts.length} stored — clear to see the empty state'
-                    : 'None stored — the empty state is live',
+                    ? '${checkin.contacts.length} saved on this device'
+                    : 'None saved — the empty state is live',
                 icon: Icons.people_outline_rounded,
                 onTap: () {
-                  if (checkin.hasContacts) {
-                    checkin.clearContacts();
-                    Toast.show(context, 'Contacts cleared.');
-                  } else {
-                    checkin.restoreContacts();
-                    Toast.show(context, 'Contacts restored.');
-                  }
+                  checkin.clearContacts();
+                  Toast.show(context, 'Trusted contacts cleared.');
                 },
               ),
               SettingRow(
@@ -292,8 +282,8 @@ class DemoPanelScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Clear all alerts',
-                subtitle: 'Shows the empty Activity tab',
+                title: L.of(context).clearAllAlerts,
+                subtitle: L.of(context).showsEmptyActivityTab,
                 icon: Icons.notifications_off_outlined,
                 onTap: () {
                   context.read<NotificationsProvider>().clearAll();
@@ -301,8 +291,8 @@ class DemoPanelScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Reset the current trip',
-                subtitle: 'Clears origin, destination and planned routes',
+                title: L.of(context).resetCurrentTrip,
+                subtitle: L.of(context).clearsOriginDestinationPlannedRoutes,
                 icon: Icons.restart_alt_rounded,
                 onTap: () {
                   context.read<RoutesProvider>()
@@ -322,7 +312,7 @@ class DemoPanelScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The two-minute demo',
+                  L.of(context).twoMinuteDemo,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: Gap.md),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 
 /// The Bahawalpur Safar mark: a route line threading through an arch, nodding to
 /// the city's palace architecture, with a streetlight glow at the top.
@@ -123,7 +124,7 @@ class SafarWordmark extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Safar',
+          L.of(context).appName,
           textAlign: alignment == CrossAxisAlignment.center
               ? TextAlign.center
               : TextAlign.start,
@@ -135,7 +136,7 @@ class SafarWordmark extends StatelessWidget {
         if (showTagline) ...[
           const SizedBox(height: Gap.xs),
           Text(
-            'Bahawalpur · Know the road before you take it.',
+            L.of(context).cityLine,
             textAlign: alignment == CrossAxisAlignment.center
                 ? TextAlign.center
                 : TextAlign.start,

@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(gutter, Gap.xxl, gutter, Gap.md),
                 child: SectionHeader(
-                  eyebrow: 'Happening now',
+                  eyebrow: L.of(context).happeningNow,
                   title: L.of(context).recentSignals,
                   subtitle: reports.state == LoadState.ready
                       ? '${reports.live.length} live in the demo area'
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.zero,
                   action: reports.isLiveData
                       ? Pill(
-                          label: 'Live',
+                          label: L.of(context).live2,
                           icon: Icons.cloud_done_outlined,
                           color: AppColors.awarenessLow,
                           dense: true,
@@ -215,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () => Navigator.of(context)
                       .push(SlideRoute(child: const HelpScreen())),
                   icon: const Icon(Icons.help_outline_rounded, size: 17),
-                  label: const Text('How route awareness is calculated'),
+                  label: Text(L.of(context).howRouteAwarenessCalculated),
                 ),
               ),
             ),
@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                 ),
                 Text(
-                  'Bahawalpur',
+                  L.of(context).bahawalpur,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
@@ -274,11 +274,11 @@ class _HomeScreenState extends State<HomeScreen> {
       actions: [
         if (afterDark)
           Tooltip(
-            message: 'After dark, lighting reports count for more',
+            message: L.of(context).afterDarkLightingReportsCount,
             child: Padding(
               padding: const EdgeInsets.only(right: Gap.xs),
               child: Pill(
-                label: 'Night',
+                label: L.of(context).night,
                 icon: Icons.nightlight_round,
                 color: AppColors.accent,
                 dense: true,
@@ -286,12 +286,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         IconButton(
-          tooltip: 'Emergency numbers',
+          tooltip: L.of(context).emergencyNumbers,
           onPressed: () => showEmergencySheet(context),
           icon: const Icon(Icons.emergency_outlined, size: 21),
         ),
         IconButton(
-          tooltip: 'Demo controls',
+          tooltip: L.of(context).demoControls,
           onPressed: () => Navigator.of(context)
               .push(SlideUpRoute(child: const DemoPanelScreen())),
           icon: const Icon(Icons.tune_rounded, size: 21),
@@ -318,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.symmetric(horizontal: gutter),
           child: SafarCard(
             child: ErrorStateView(
-              title: 'Could not load signals',
+              title: L.of(context).couldLoadSignals,
               message: reports.error ??
                   'The community signal service did not respond.',
               onRetry: () => reports.load(),
@@ -339,9 +339,8 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.sentiment_satisfied_outlined,
               title: L.of(context).noLiveReports,
               message:
-                  'Nothing has been reported in the demo area recently. That is '
-                  'not the same as "all clear" — it means we have no data.',
-              primaryLabel: 'Be the first to report',
+                  L.of(context).nothingBeenReportedDemoArea,
+              primaryLabel: L.of(context).beFirstToReport,
               onPrimary: () => Navigator.of(context)
                   .push(SlideUpRoute(child: const ReportFlowScreen())),
             ),
@@ -408,7 +407,7 @@ class _TripPlanner extends StatelessWidget {
                 child: Column(
                   children: [
                     PickerField(
-                      label: 'From',
+                      label: L.of(context).from,
                       value: origin?.name,
                       hint: 'Choose a starting point',
                       leading: Icons.trip_origin_rounded,
@@ -431,7 +430,7 @@ class _TripPlanner extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Swap',
+                tooltip: L.of(context).swap,
                 onPressed: onSwap,
                 icon: const Icon(Icons.swap_vert_rounded, size: 20),
               ),
@@ -547,7 +546,7 @@ class _AreaSnapshot extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Around you right now', style: t.titleMedium),
+                Text(L.of(context).aroundYouNow, style: t.titleMedium),
                 const SizedBox(height: Gap.sm),
                 Text(
                   _summaryLine(reports, blocked.length),

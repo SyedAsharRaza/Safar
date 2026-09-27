@@ -27,6 +27,7 @@ import '../../widgets/routes/voice_warning.dart';
 import '../checkin/checkin_setup_screen.dart';
 import '../report/report_detail_screen.dart';
 import '../report/report_flow_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Everything about one chosen route: the map, what is on it, why it scores the
 /// way it does, the voice warning, and the check-in handoff.
@@ -95,7 +96,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                 child: _CircleButton(
                   icon: Icons.volume_up_rounded,
                   onTap: _playWarning,
-                  tooltip: 'Play voice warning',
+                  tooltip: L.of(context).playVoiceWarning,
                 ),
               ),
               SizedBox(width: gutter - Gap.sm),
@@ -169,19 +170,19 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                     tiles: [
                       StatTile(
                           value: TimeUtils.minutes(route.totalMinutes),
-                          label: 'Estimated time',
+                          label: L.of(context).estimatedTime,
                           icon: Icons.schedule_rounded,
                           tone: colour,
                         ),
                       StatTile(
                           value: TimeUtils.distance(route.distanceKm),
-                          label: 'Distance',
+                          label: L.of(context).distance,
                           icon: Icons.straighten_rounded,
                           tone: colour,
                         ),
                       StatTile(
                           value: '${route.reports.length}',
-                          label: 'Live reports',
+                          label: L.of(context).liveReports,
                           icon: Icons.campaign_outlined,
                           tone: colour,
                         ),
@@ -226,7 +227,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(gutter, Gap.xxl, gutter, Gap.md),
               child: SectionHeader(
-                eyebrow: 'On this route',
+                eyebrow: L.of(context).route2,
                 title: route.reports.isEmpty
                     ? 'No live reports'
                     : 'What travellers reported',
@@ -247,11 +248,10 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                   child: EmptyState(
                     compact: true,
                     icon: Icons.help_outline_rounded,
-                    title: 'Limited data on this route',
+                    title: L.of(context).limitedDataRoute,
                     message:
-                        'Nobody has reported anything here recently. That is not '
-                        'a clear signal either way — it just means we do not know.',
-                    primaryLabel: 'Report what you see',
+                        L.of(context).nobodyReportedAnythingHereRecently,
+                    primaryLabel: L.of(context).reportWhatSee,
                     onPrimary: () => Navigator.of(context)
                         .push(SlideUpRoute(child: const ReportFlowScreen())),
                   ),
@@ -277,9 +277,9 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.fromLTRB(gutter, Gap.xxl, gutter, Gap.md),
-              child: const SectionHeader(
-                eyebrow: 'Step by step',
-                title: 'Roads on this route',
+              child: SectionHeader(
+                eyebrow: L.of(context).stepStep,
+                title: L.of(context).roadsRoute,
                 padding: EdgeInsets.zero,
               ),
             ),
@@ -310,7 +310,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Why this awareness level?',
+                              L.of(context).whyAwarenessLevel,
                               style: t.titleMedium,
                             ),
                           ),
@@ -357,7 +357,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
         ],
       ),
       bottomNavigationBar: StickyActionBar(
-        note: 'Check-in notifications are simulated in this UI build.',
+        note: L.of(context).checkNotificationsSimulatedUiBuild,
         primary: FilledButton.icon(
           onPressed: () => Navigator.of(context).push(
             SlideUpRoute(
@@ -379,7 +379,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
           onPressed: () => Navigator.of(context)
               .push(SlideUpRoute(child: const ReportFlowScreen())),
           icon: const Icon(Icons.add_comment_outlined, size: 18),
-          label: const Text('Report a nearby issue'),
+          label: Text(L.of(context).reportNearbyIssue),
         ),
       ),
     );
@@ -421,13 +421,13 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
             tiles: [
               StatTile(
                   value: '${(part.segment.baseLightingScore * 100).round()}%',
-                  label: 'Baseline lighting',
+                  label: L.of(context).baselineLighting,
                   icon: Icons.lightbulb_outline,
                   tone: AppColors.accentDeep,
                 ),
               StatTile(
                   value: '${(part.segment.activityScore * 100).round()}%',
-                  label: 'How busy',
+                  label: L.of(context).howBusy,
                   icon: Icons.groups_outlined,
                   tone: AppColors.teal,
                 ),
@@ -435,7 +435,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                   value: part.extraMinutes < 1
                       ? '—'
                       : '+${part.extraMinutes.round()}m',
-                  label: 'Reported delay',
+                  label: L.of(context).reportedDelay,
                   icon: Icons.timer_outlined,
                   tone: AppColors.awarenessModerate,
                 ),
@@ -458,10 +458,9 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
               ),
           ] else ...[
             const SizedBox(height: Gap.lg),
-            const InfoPanel(
+            InfoPanel(
               text:
-                  'No community reports on this stretch. The level above comes '
-                  'from its baseline lighting and how busy it usually is.',
+                  L.of(context).noCommunityReportsStretchLevel,
               icon: Icons.help_outline,
               dense: true,
             ),
@@ -510,7 +509,7 @@ class _VoiceWarningCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      'Voice warning',
+                      L.of(context).voiceWarning,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(width: Gap.sm),

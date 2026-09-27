@@ -162,12 +162,12 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Use my current location',
+                      L.of(context).useMyLocation,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 1),
                     Text(
-                      'Simulated — no location permission is requested',
+                      L.of(context).simulatedNoLocationPermissionRequested,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                             color: context.tokens.textSecondary,
                           ),
@@ -191,7 +191,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                   SlideRoute(child: const _SavedPlacesQuickList()),
                 );
               },
-              child: const Text('Manage'),
+              child: Text(L.of(context).manage),
             ),
           ),
           for (final s in places.saved)
@@ -212,7 +212,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                 context.read<PlacesProvider>().clearRecent();
                 Toast.show(context, 'Recent searches cleared.');
               },
-              child: const Text('Clear'),
+              child: Text(L.of(context).clear),
             ),
           ),
           for (final p in places.recent)
@@ -226,10 +226,9 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
               child: EmptyState(
                 compact: true,
                 icon: Icons.bookmark_border_rounded,
-                title: 'No saved or recent places yet',
+                title: L.of(context).noSavedRecentPlacesYet,
                 message:
-                    'Search for a destination below. Places you pick will show '
-                    'up here next time.',
+                    L.of(context).searchDestinationBelowPlacesPick,
               ),
             ),
           ),
@@ -270,9 +269,8 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
         icon: Icons.search_off_rounded,
         title: 'No places match "${_term.trim()}"',
         message:
-            'This prototype covers one demo area of Bahawalpur, so the place '
-            'list is limited. Try "Model Town", "university" or "bazaar".',
-        primaryLabel: 'Clear search',
+            L.of(context).prototypeCoversOneDemoArea2,
+        primaryLabel: L.of(context).clearSearch,
         onPrimary: () {
           _query.clear();
           _onChanged('');
@@ -481,11 +479,10 @@ class _SavedPlacesQuickList extends StatelessWidget {
       body: places.saved.isEmpty
           ? EmptyState(
               icon: Icons.bookmark_border_rounded,
-              title: 'Nothing saved yet',
+              title: L.of(context).nothingSavedYet,
               message:
-                  'Tap the bookmark on any place to keep it here for quick '
-                  'access.',
-              primaryLabel: 'Back to search',
+                  L.of(context).tapBookmarkAnyPlaceKeep,
+              primaryLabel: L.of(context).backSearch,
               onPrimary: () => Navigator.of(context).pop(),
             )
           : ListView(
@@ -518,16 +515,15 @@ class _SavedPlacesQuickList extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            tooltip: 'Remove',
+                            tooltip: L.of(context).remove,
                             icon: const Icon(Icons.delete_outline_rounded),
                             onPressed: () async {
                               final ok = await confirmAction(
                                 context,
                                 title: 'Remove ${s.title}?',
                                 message:
-                                    'It will no longer appear in your saved '
-                                    'places. You can save it again any time.',
-                                confirmLabel: 'Remove',
+                                    L.of(context).willNoLongerAppearSaved,
+                                confirmLabel: L.of(context).remove,
                                 destructive: true,
                                 icon: Icons.bookmark_remove_outlined,
                               );

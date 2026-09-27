@@ -7,6 +7,7 @@ import '../../models/road_segment.dart';
 import '../../models/route_option.dart';
 import '../common/badges.dart';
 import '../common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Shows *why* a route carries the awareness level it does, term by term.
 ///
@@ -39,7 +40,7 @@ class AwarenessBreakdown extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text('How this level was calculated', style: t.titleMedium),
+              child: Text(L.of(context).howLevelCalculated, style: t.titleMedium),
             ),
             AwarenessBadge(level: route.level, dense: true, short: true),
           ],

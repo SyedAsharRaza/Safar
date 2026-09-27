@@ -91,12 +91,11 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
     }
     final leave = await confirmAction(
       context,
-      title: 'Discard this report?',
+      title: L.of(context).discardReport,
       message:
-          'What you have entered so far will not be saved, and nothing will be '
-          'published.',
-      confirmLabel: 'Discard',
-      cancelLabel: 'Keep editing',
+          L.of(context).whatEnteredSoFarWill,
+      confirmLabel: L.of(context).discard,
+      cancelLabel: L.of(context).keepEditing,
       destructive: true,
       icon: Icons.delete_outline_rounded,
     );
@@ -147,17 +146,16 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
     if (reports.rateLimited) {
       await showSafarSheet<void>(
         context,
-        title: 'You have hit the hourly limit',
+        title: L.of(context).hitHourlyLimit,
         subtitle:
             'Up to ${AppLimits.maxReportsPerHour} reports an hour keeps the '
             'signal useful and makes spam harder.',
         scrollable: false,
         child: Column(
           children: [
-            const InfoPanel(
+            InfoPanel(
               text:
-                  'Rate limits exist so one person cannot flood an area with '
-                  'reports. Your earlier reports are still live.',
+                  L.of(context).rateLimitsExistSoOne,
               icon: Icons.speed_rounded,
             ),
             const SizedBox(height: Gap.lg),
@@ -165,7 +163,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Understood'),
+                child: Text(L.of(context).understood),
               ),
             ),
           ],
@@ -213,7 +211,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
             ),
             onPressed: _back,
           ),
-          title: const Text('Report a road condition'),
+          title: Text(L.of(context).reportAction),
           actions: [
             Padding(
               padding: EdgeInsets.only(right: Gap.page(context)),
@@ -293,13 +291,12 @@ class _CategoryStep extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.x4l),
       children: [
         Text(
-          'What are you reporting?',
+          L.of(context).whatReporting,
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: Gap.sm),
         Text(
-          'Pick the closest category. You can correct it later if the app reads '
-          'your description differently.',
+          L.of(context).pickClosestCategoryCorrectLater,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
         ),
         const SizedBox(height: Gap.xl),
@@ -413,9 +410,9 @@ class _IssueStep extends StatelessWidget {
     if (category == null) {
       return EmptyState(
         icon: Icons.category_outlined,
-        title: 'Pick a category first',
-        message: 'Go back a step and choose what kind of thing you are reporting.',
-        primaryLabel: 'Choose a category',
+        title: L.of(context).pickCategoryFirst,
+        message: L.of(context).goBackStepChooseWhat,
+        primaryLabel: L.of(context).chooseCategory,
         onPrimary: onChangeCategory,
       );
     }
@@ -429,17 +426,17 @@ class _IssueStep extends StatelessWidget {
           children: [
             CategoryChip(category: category!, dense: false),
             const Spacer(),
-            TextButton(onPressed: onChangeCategory, child: const Text('Change')),
+            TextButton(onPressed: onChangeCategory, child: Text(L.of(context).change)),
           ],
         ),
         const SizedBox(height: Gap.lg),
         Text(
-          'What exactly is happening?',
+          L.of(context).whatExactly,
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: Gap.sm),
         Text(
-          'The phrase underneath each option is how people usually say it.',
+          L.of(context).phraseUnderneathEachOptionHow,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: Gap.xl),
@@ -530,7 +527,7 @@ class _LocationStep extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.lg),
             children: [
               Text(
-                'Where is it?',
+                L.of(context).whereIsIt,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: Gap.sm),
@@ -579,7 +576,7 @@ class _LocationStep extends StatelessWidget {
                           left: Gap.md,
                           top: Gap.md,
                           child: Pill(
-                            label: 'Tap to place the pin',
+                            label: L.of(context).tapPlacePin,
                             icon: Icons.touch_app_outlined,
                             color: context.tokens.textPrimary,
                             background: context.scheme.surface,
@@ -591,7 +588,7 @@ class _LocationStep extends StatelessWidget {
                           left: Gap.md,
                           top: Gap.md,
                           child: Pill(
-                            label: 'Rounded to about 250 m',
+                            label: L.of(context).roundedAboutM,
                             icon: Icons.blur_on_rounded,
                             color: context.tokens.textPrimary,
                             background: context.scheme.surface,
@@ -625,7 +622,7 @@ class _LocationStep extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Text(
-                            'This report will apply to this road segment',
+                            L.of(context).reportWillApplyRoadSegment,
                             style: Theme.of(context).textTheme.labelMedium,
                           ),
                         ],
@@ -637,14 +634,12 @@ class _LocationStep extends StatelessWidget {
 
               if (isSensitive) ...[
                 const SizedBox(height: Gap.md),
-                const InfoPanel(
+                InfoPanel(
                   text:
-                      'Safety-concern reports are always rounded to an approximate '
-                      'area before publishing, so a report never points at one '
-                      'doorstep.',
+                      L.of(context).safetyConcernReportsAlwaysRounded,
                   icon: Icons.privacy_tip_outlined,
                   tone: AppColors.awarenessModerate,
-                  title: 'Sensitive category',
+                  title: L.of(context).sensitiveCategory,
                 ),
               ],
             ],
@@ -653,7 +648,7 @@ class _LocationStep extends StatelessWidget {
         StickyActionBar(
           primary: FilledButton(
             onPressed: onNext,
-            child: const Text('Continue'),
+            child: Text(L.of(context).continueLabel),
           ),
         ),
       ],
@@ -702,14 +697,12 @@ class _DescribeStepState extends State<_DescribeStep> {
             padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.lg),
             children: [
               Text(
-                'Anything to add?',
+                L.of(context).anythingToAdd,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: Gap.sm),
               Text(
-                'Optional. Write in English, Urdu or Roman Urdu — whichever is '
-                'natural. The app reads it and suggests a category, which you '
-                'then confirm.',
+                L.of(context).optionalWriteEnglishUrduRoman,
                 style:
                     Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
               ),
@@ -723,7 +716,7 @@ class _DescribeStepState extends State<_DescribeStep> {
                 textCapitalization: TextCapitalization.sentences,
                 onChanged: (_) => setState(() {}),
                 decoration: InputDecoration(
-                  hintText: 'e.g. "Aagay gali band hai"',
+                  hintText: L.of(context).eGAagayGaliBand,
                   alignLabelWithHint: true,
                   counterText: '$length / ${AppLimits.descriptionMaxChars}',
                 ),
@@ -731,7 +724,7 @@ class _DescribeStepState extends State<_DescribeStep> {
               const SizedBox(height: Gap.md),
 
               Text(
-                'Tap an example to use it',
+                L.of(context).tapExampleUse,
                 style: Theme.of(context).textTheme.labelSmall,
               ),
               const SizedBox(height: Gap.sm),
@@ -752,14 +745,12 @@ class _DescribeStepState extends State<_DescribeStep> {
               ),
               const SizedBox(height: Gap.xl),
 
-              const InfoPanel(
+              InfoPanel(
                 text:
-                    'Do not include names, phone numbers, vehicle plates or '
-                    'private addresses. Reports that identify a person are never '
-                    'published.',
+                    L.of(context).doIncludeNamesPhoneNumbers,
                 icon: Icons.shield_outlined,
                 tone: AppColors.awarenessModerate,
-                title: 'What not to write',
+                title: L.of(context).whatWrite,
               ),
               const SizedBox(height: Gap.md),
               Consumer<ReportsProvider>(

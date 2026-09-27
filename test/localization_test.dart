@@ -2,6 +2,9 @@ import 'package:bahawalpur_safar/l10n/app_localizations.dart';
 import 'package:bahawalpur_safar/models/taxonomy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 /// Renders a probe widget under one locale and returns what it saw.
@@ -93,6 +96,46 @@ void main() {
     for (final locale in [const Locale('ur'), const Locale('pa')]) {
       final r = await load(tester, locale);
       expect(r.appName, isNot('Safar'), reason: '$locale fell back');
+    }
+  });
+
+  test('every locale defines every key', () {
+    // A missing key silently renders English inside an Urdu screen, which is
+    // exactly what makes a translation look half-finished. Catch it here
+    // rather than in a screenshot.
+    final en = jsonDecode(
+      File('lib/l10n/app_en.arb').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final keys = en.keys.where((k) => !k.startsWith('@')).toSet();
+
+    for (final file in ['app_ur.arb', 'app_pa.arb', 'app_ur_Latn.arb']) {
+      final d = jsonDecode(
+        File('lib/l10n/$file').readAsStringSync(),
+      ) as Map<String, dynamic>;
+      final have = d.keys.where((k) => !k.startsWith('@')).toSet();
+      expect(
+        keys.difference(have),
+        isEmpty,
+        reason: '$file is missing keys',
+      );
+    }
+  });
+
+  test('right-to-left locales are not left in Latin script', () {
+    // Urdu and Punjabi must actually be in Arabic script; an English string
+    // copied across would read as Latin and betray an untranslated key.
+    for (final file in ['app_ur.arb', 'app_pa.arb']) {
+      final d = jsonDecode(
+        File('lib/l10n/$file').readAsStringSync(),
+      ) as Map<String, dynamic>;
+      final latinOnly = <String>[];
+      d.forEach((k, v) {
+        if (k.startsWith('@') || v is! String || v.length < 12) return;
+        final hasArabic = RegExp(r'[؀-ۿ]').hasMatch(v);
+        final hasLatin = RegExp(r'[a-zA-Z]{4,}').hasMatch(v);
+        if (!hasArabic && hasLatin) latinOnly.add('$k: $v');
+      });
+      expect(latinOnly, isEmpty, reason: '$file has untranslated strings');
     }
   });
 }

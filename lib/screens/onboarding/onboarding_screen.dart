@@ -108,7 +108,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ? Colors.white.withValues(alpha: 0.8)
                               : context.tokens.textSecondary,
                         ),
-                        child: const Text('Skip'),
+                        child: Text(L.of(context).skip),
                       ),
                     ],
                   ),
@@ -119,9 +119,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     controller: _pages,
                     onPageChanged: (i) => setState(() => _index = i),
                     children: [
-                      const _WelcomePage(),
-                      const _HowItWorksPage(),
-                      const _LimitsPage(),
+                      _WelcomePage(),
+                      _HowItWorksPage(),
+                      _LimitsPage(),
                       _LanguagePage(onDone: _finish),
                     ],
                   ),
@@ -200,19 +200,19 @@ class _WelcomePage extends StatelessWidget {
           const SafarLogo(size: 72, onDark: true),
           const SizedBox(height: Gap.xxl),
           Text(
-            'A normal map tells you\nthe fastest way.',
+            L.of(context).normalMapTellsNtheFastest,
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   color: Colors.white.withValues(alpha: 0.5),
                 ),
           ),
           const SizedBox(height: Gap.lg),
           Text(
-            'Safar tells you what to expect on the way.',
+            L.of(context).safarTellsWhatExpectWay,
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   color: Colors.white,
                 ),
           ),
-          const SizedBox(height: Gap.xl),
+          SizedBox(height: Gap.xl),
           Text(
             AppText.pitch,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -220,7 +220,7 @@ class _WelcomePage extends StatelessWidget {
                   height: 1.55,
                 ),
           ),
-          const SizedBox(height: Gap.x3l),
+          SizedBox(height: Gap.x3l),
           Wrap(
             spacing: Gap.sm,
             runSpacing: Gap.sm,
@@ -245,39 +245,16 @@ class _WelcomePage extends StatelessWidget {
 class _HowItWorksPage extends StatelessWidget {
   const _HowItWorksPage();
 
-  static const List<({IconData icon, String title, String body})> _steps = [
-    (
-      icon: Icons.record_voice_over_outlined,
-      title: 'A resident reports what they see',
-      body:
-          'In English, Urdu, Roman Urdu or Punjabi — "aagay gali band hai", '
-          '"road par pani khara hai", "streetlight band hai".',
-    ),
-    (
-      icon: Icons.auto_awesome_outlined,
-      title: 'The report becomes a structured signal',
-      body:
-          'Informal text is turned into a category, a severity and a neutral '
-          'public summary. You always review it before it is published.',
-    ),
-    (
-      icon: Icons.alt_route_outlined,
-      title: 'Routes are compared, and explained',
-      body:
-          'Fresh reports count more than old ones. Every route says in plain '
-          'words what it avoids and what it costs you in minutes.',
-    ),
-    (
-      icon: Icons.notifications_active_outlined,
-      title: 'The next traveller is warned',
-      body:
-          'A short voice warning before you set off, and a safety check-in you '
-          'can share with someone you trust.',
-    ),
+  static List<({IconData icon, String title, String body})> _steps(L l) => [
+    (icon: Icons.record_voice_over_outlined, title: l.howStep1Title, body: l.howStep1Body),
+    (icon: Icons.auto_awesome_outlined, title: l.howStep2Title, body: l.howStep2Body),
+    (icon: Icons.alt_route_outlined, title: l.howStep3Title, body: l.howStep3Body),
+    (icon: Icons.notifications_active_outlined, title: l.howStep4Title, body: l.howStep4Body),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final steps = _steps(L.of(context));
     return ListView(
       padding: EdgeInsets.symmetric(
         horizontal: Gap.page(context),
@@ -285,18 +262,18 @@ class _HowItWorksPage extends StatelessWidget {
       ),
       children: [
         Text(
-          'How it works',
+          L.of(context).howWorks,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: Gap.sm),
         Text(
-          'One report from one person helps everyone who travels that road next.',
+          L.of(context).oneReportOnePersonHelps,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: context.tokens.textSecondary,
               ),
         ),
         const SizedBox(height: Gap.xxl),
-        for (var i = 0; i < _steps.length; i++)
+        for (var i = 0; i < steps.length; i++)
           StaggeredFadeIn(
             index: i,
             child: Padding(
@@ -315,12 +292,12 @@ class _HowItWorksPage extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          _steps[i].icon,
+                          steps[i].icon,
                           size: 18,
                           color: context.scheme.primary,
                         ),
                       ),
-                      if (i != _steps.length - 1)
+                      if (i != steps.length - 1)
                         Container(
                           width: 2,
                           height: 44,
@@ -337,12 +314,12 @@ class _HowItWorksPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _steps[i].title,
+                            steps[i].title,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: Gap.xs),
                           Text(
-                            _steps[i].body,
+                            steps[i].body,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall
@@ -403,12 +380,12 @@ class _LimitsPage extends StatelessWidget {
         ),
         const SizedBox(height: Gap.xl),
         Text(
-          'What this app will not do',
+          L.of(context).whatAppWillDo,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: Gap.sm),
         Text(
-          'Worth reading before you rely on it.',
+          L.of(context).worthReadingBeforeRely,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: context.tokens.textSecondary,
               ),
@@ -419,7 +396,7 @@ class _LimitsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'It is not',
+                L.of(context).itIsNot,
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
@@ -537,8 +514,7 @@ class _LanguagePage extends StatelessWidget {
         ),
         const SizedBox(height: Gap.sm),
         Text(
-          'This sets the voice warnings and the wording of report prompts. You '
-          'can always report in whichever language you actually speak.',
+          'This sets the voice warnings and the wording of report prompts. You can always report in whichever language you actually speak.',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: context.tokens.textSecondary,
                 height: 1.5,

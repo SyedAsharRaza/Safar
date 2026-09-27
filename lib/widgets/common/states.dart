@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Illustrated empty state. Every list in the app has one.
 class EmptyState extends StatelessWidget {
@@ -316,7 +317,7 @@ class OfflineBanner extends StatelessWidget {
           const SizedBox(width: Gap.md),
           Expanded(
             child: Text(
-              'Offline. Showing the last signals saved on this device.',
+              L.of(context).offlineBanner,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: context.scheme.onSecondaryContainer,
                     fontWeight: FontWeight.w600,

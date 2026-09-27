@@ -38,11 +38,11 @@ class SettingsScreen extends StatelessWidget {
         children: [
           // --- Language & voice ---------------------------------------------------
           SettingGroup(
-            title: 'Language and voice',
+            title: L.of(context).languageVoice,
             children: [
               SettingRow(
                 title: L.of(context).appLanguage,
-                subtitle: 'Warnings, prompts and summaries',
+                subtitle: L.of(context).warningsPromptsSummaries,
                 value: app.language.nativeLabel,
                 icon: Icons.translate_rounded,
                 onTap: () => _pick<ReportLanguage>(
@@ -57,7 +57,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               SettingRow(
                 title: L.of(context).voiceWarnings,
-                subtitle: 'Play a short spoken warning before you set off',
+                subtitle: L.of(context).voiceWarningsSub,
                 icon: Icons.volume_up_outlined,
                 switchValue: app.voiceWarnings,
                 onSwitch: app.toggleVoiceWarnings,
@@ -72,7 +72,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               SettingRow(
                 title: L.of(context).reportAnonymously,
-                subtitle: 'Your reports never carry a name',
+                subtitle: L.of(context).reportsNeverCarryName,
                 icon: Icons.visibility_off_outlined,
                 tone: AppColors.teal,
                 switchValue: app.anonymousByDefault,
@@ -91,7 +91,7 @@ class SettingsScreen extends StatelessWidget {
               SettingRow(
                 title: L.of(context).blurSensitive,
                 subtitle:
-                    'Round safety-concern reports to roughly a 250 m area',
+                    L.of(context).roundSafetyConcernReportsRoughly,
                 icon: Icons.blur_on_rounded,
                 tone: AppColors.teal,
                 switchValue: app.approximateSensitive,
@@ -113,11 +113,11 @@ class SettingsScreen extends StatelessWidget {
           // --- Map and data -------------------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'Map and data',
+            title: L.of(context).mapData,
             children: [
               SettingRow(
-                title: 'Show expired reports',
-                subtitle: 'Greyed out, and they do not affect routes',
+                title: L.of(context).showExpiredReports,
+                subtitle: L.of(context).greyedOutTheyDoAffect,
                 icon: Icons.history_rounded,
                 switchValue: reports.includeExpired,
                 onSwitch: reports.setIncludeExpired,
@@ -159,8 +159,8 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               SettingRow(
-                title: 'Reload community signals',
-                subtitle: 'Fetch the seeded demonstration data again',
+                title: L.of(context).reloadCommunitySignals,
+                subtitle: L.of(context).fetchSeededDemonstrationDataAgain,
                 icon: Icons.refresh_rounded,
                 onTap: () async {
                   await reports.load(offline: app.offline);
@@ -179,20 +179,20 @@ class SettingsScreen extends StatelessWidget {
           // --- Demo controls ---------------------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'Prototype controls',
+            title: L.of(context).prototypeControls,
             children: [
               SettingRow(
-                title: 'Demo control panel',
+                title: L.of(context).demoControlPanel,
                 subtitle:
-                    'Switch personas, force errors, empty the data — for demos',
+                    L.of(context).switchPersonasForceErrorsEmpty,
                 icon: Icons.tune_rounded,
                 tone: AppColors.accentDeep,
                 onTap: () => Navigator.of(context)
                     .push(SlideUpRoute(child: const DemoPanelScreen())),
               ),
               SettingRow(
-                title: 'Simulate offline',
-                subtitle: 'Shows the offline banner and the cached-data path',
+                title: L.of(context).simulateOffline,
+                subtitle: L.of(context).showsOfflineBannerCachedData,
                 icon: Icons.wifi_off_rounded,
                 tone: AppColors.accentDeep,
                 switchValue: app.offline,
@@ -212,34 +212,32 @@ class SettingsScreen extends StatelessWidget {
           // --- About --------------------------------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'About',
+            title: L.of(context).about,
             children: [
               SettingRow(
-                title: 'How route awareness works',
+                title: L.of(context).howRouteAwarenessWorks,
                 icon: Icons.help_outline_rounded,
                 onTap: () => Navigator.of(context)
                     .push(SlideRoute(child: const HelpScreen())),
               ),
               SettingRow(
-                title: 'About and limitations',
+                title: L.of(context).aboutLimitations,
                 icon: Icons.info_outline_rounded,
                 onTap: () => Navigator.of(context)
                     .push(SlideRoute(child: const AboutScreen())),
               ),
               SettingRow(
-                title: 'Clear local data',
-                subtitle: 'Resets saved places, contacts and alerts',
+                title: L.of(context).clearLocalData,
+                subtitle: L.of(context).resetsSavedPlacesContactsAlerts,
                 icon: Icons.delete_outline_rounded,
                 destructive: true,
                 onTap: () async {
                   final ok = await confirmAction(
                     context,
-                    title: 'Clear local data?',
+                    title: L.of(context).clearLocalData2,
                     message:
-                        'Saved places, trusted contacts and alerts on this '
-                        'device will be removed. Seeded demonstration signals '
-                        'stay, so the demo keeps working.',
-                    confirmLabel: 'Clear data',
+                        L.of(context).savedPlacesTrustedContactsAlerts,
+                    confirmLabel: L.of(context).clearData,
                     destructive: true,
                     icon: Icons.delete_outline_rounded,
                   );

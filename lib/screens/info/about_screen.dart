@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../widgets/common/badges.dart';
 import '../../widgets/common/brand.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 /// About, limitations and privacy. The page the product has to have if it is
 /// going to talk about safety at all.
@@ -39,7 +40,7 @@ class AboutScreen extends StatelessWidget {
     final t = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('About')),
+      appBar: AppBar(title: Text(L.of(context).about)),
       body: ListView(
         padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.x4l),
         children: [
@@ -64,9 +65,9 @@ class AboutScreen extends StatelessWidget {
 
           const SizedBox(height: Gap.xl),
           Row(
-            children: const [
+            children: [
               Pill(
-                label: 'UI prototype · v1.0.0',
+                label: L.of(context).uiPrototypeV,
                 icon: Icons.construction_rounded,
               ),
               SizedBox(width: Gap.sm),
@@ -81,7 +82,7 @@ class AboutScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'What Safar is not',
+                  L.of(context).whatSafar,
                   style: t.titleMedium?.copyWith(color: context.scheme.error),
                 ),
                 const SizedBox(height: Gap.md),
@@ -119,7 +120,7 @@ class AboutScreen extends StatelessWidget {
                       color: AppColors.teal,
                     ),
                     const SizedBox(width: Gap.sm),
-                    Text('Privacy and abuse prevention', style: t.titleMedium),
+                    Text(L.of(context).privacyAbusePrevention, style: t.titleMedium),
                   ],
                 ),
                 const SizedBox(height: Gap.md),
@@ -154,7 +155,7 @@ class AboutScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('About the data in this build', style: t.titleMedium),
+                Text(L.of(context).aboutDataBuild, style: t.titleMedium),
                 const SizedBox(height: Gap.sm),
                 Text(
                   AppText.demoDataExplainer,
@@ -162,11 +163,7 @@ class AboutScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: Gap.md),
                 Text(
-                  'Routes are planned over a hand-built road network for one area '
-                  'of Bahawalpur. Coordinates are approximate and are not survey '
-                  'data. The map is drawn by the app rather than served by a maps '
-                  'provider. Classification of report text runs locally, not '
-                  'against a hosted model.',
+                  L.of(context).routesPlannedOverHandBuilt,
                   style: t.bodySmall?.copyWith(height: 1.5),
                 ),
               ],
@@ -188,7 +185,7 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: Gap.xl),
           Center(
             child: Text(
-              'Built for Bahawalpur.',
+              L.of(context).builtBahawalpur,
               style: t.labelMedium
                   ?.copyWith(color: context.tokens.textTertiary),
             ),

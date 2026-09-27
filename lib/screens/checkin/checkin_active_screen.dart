@@ -35,12 +35,11 @@ class CheckinActiveScreen extends StatelessWidget {
   Future<void> _cancel(BuildContext context) async {
     final ok = await confirmAction(
       context,
-      title: 'Cancel the check-in?',
+      title: L.of(context).cancelCheck,
       message:
-          'The timer stops and your contacts will not be notified either way. '
-          'You can start a new one whenever you like.',
-      confirmLabel: 'Cancel check-in',
-      cancelLabel: 'Keep it running',
+          L.of(context).timerStopsContactsWillNotified,
+      confirmLabel: L.of(context).cancelCheckin,
+      cancelLabel: L.of(context).keepRunning,
       destructive: true,
       icon: Icons.timer_off_outlined,
     );
@@ -68,11 +67,10 @@ class CheckinActiveScreen extends StatelessWidget {
         ),
         body: EmptyState(
           icon: Icons.timer_off_outlined,
-          title: 'No check-in running',
+          title: L.of(context).noCheckRunning,
           message:
-              'This check-in has already finished. Start a new one from the home '
-              'screen when you next set off.',
-          primaryLabel: 'Back',
+              L.of(context).checkAlreadyFinishedStartNew,
+          primaryLabel: L.of(context).back,
           onPrimary: () => Navigator.of(context).pop(),
         ),
       );
@@ -83,14 +81,14 @@ class CheckinActiveScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Check-in'),
+        title: Text(L.of(context).check),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
-            tooltip: 'Emergency numbers',
+            tooltip: L.of(context).emergencyNumbers,
             onPressed: () => showEmergencySheet(context),
             icon: const Icon(Icons.emergency_outlined, size: 21),
           ),
@@ -115,19 +113,16 @@ class CheckinActiveScreen extends StatelessWidget {
 
           if (overdue)
             InfoPanel(
-              title: 'Your check-in window has passed',
+              title: L.of(context).checkWindowPassed,
               text:
-                  'In the full product your contacts would have been reminded to '
-                  'check on you by now. Let them know you are safe, or extend the '
-                  'timer if you are still on the way.',
+                  L.of(context).fullProductContactsWouldBeen,
               icon: Icons.notification_important_rounded,
               tone: AppColors.danger,
             )
           else
             InfoPanel(
               text:
-                  'Notifying contacts is simulated in this UI build — no message '
-                  'is actually sent.',
+                  L.of(context).notifyingContactsSimulatedUiBuild,
               icon: Icons.info_outline,
               dense: true,
             ),
@@ -140,29 +135,29 @@ class CheckinActiveScreen extends StatelessWidget {
               children: [
                 _Row(
                   icon: Icons.place_outlined,
-                  label: 'Destination',
+                  label: L.of(context).destination,
                   value: active.destinationName.isEmpty
                       ? 'Not set'
                       : active.destinationName,
                 ),
                 _Row(
                   icon: Icons.alt_route_rounded,
-                  label: 'Route',
+                  label: L.of(context).route,
                   value: active.routeName.isEmpty ? 'Not set' : active.routeName,
                 ),
                 _Row(
                   icon: Icons.play_circle_outline_rounded,
-                  label: 'Started',
+                  label: L.of(context).started,
                   value: TimeUtils.timeOfDay(active.startedAt),
                 ),
                 _Row(
                   icon: Icons.flag_outlined,
-                  label: 'Due by',
+                  label: L.of(context).due,
                   value: TimeUtils.timeOfDay(active.dueAt),
                 ),
                 _Row(
                   icon: Icons.share_location_rounded,
-                  label: 'Live position',
+                  label: L.of(context).livePosition,
                   value: active.shareLiveLocation
                       ? 'Shared (simulated)'
                       : 'Not shared',
@@ -181,10 +176,9 @@ class CheckinActiveScreen extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: Gap.md),
           ),
           if (active.contacts.isEmpty)
-            const InfoPanel(
+            InfoPanel(
               text:
-                  'You started this check-in without a contact, so the timer is '
-                  'just for you. Adding someone makes it far more useful.',
+                  L.of(context).startedCheckWithoutContactSo,
               icon: Icons.person_off_outlined,
               dense: true,
             )
@@ -241,7 +235,7 @@ class CheckinActiveScreen extends StatelessWidget {
               Toast.show(context, 'Added 10 minutes to your check-in.');
             },
             icon: const Icon(Icons.more_time_rounded, size: 18),
-            label: const Text('Need 10 more minutes'),
+            label: Text(L.of(context).needMoreMinutes),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 50),
             ),

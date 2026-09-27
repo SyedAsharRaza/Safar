@@ -131,13 +131,13 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
   void _showReportPreview(String id) {
     showSafarSheet<void>(
       context,
-      title: 'Community signal',
-      subtitle: 'Tap through for the full report and its route effect.',
+      title: L.of(context).communitySignal,
+      subtitle: L.of(context).tapThroughFullReportIts,
       child: Consumer<ReportsProvider>(
         builder: (context, reports, _) {
           final report = reports.byId(id);
           if (report == null) {
-            return const Text('This report is no longer available.');
+            return Text(L.of(context).reportNoLongerAvailable2);
           }
           return Column(
             children: [
@@ -165,7 +165,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                           ),
                         );
                       },
-                      child: const Text('Open report'),
+                      child: Text(L.of(context).openReport),
                     ),
                   ),
                 ],
@@ -216,7 +216,7 @@ class _TopBar extends StatelessWidget {
                 IconButton(
                   onPressed: onBack,
                   icon: const Icon(Icons.arrow_back_rounded, size: 20),
-                  tooltip: 'Back',
+                  tooltip: L.of(context).back,
                 ),
                 Expanded(
                   child: Column(
@@ -266,7 +266,7 @@ class _TopBar extends StatelessWidget {
                 IconButton(
                   onPressed: onSwap,
                   icon: const Icon(Icons.swap_vert_rounded, size: 19),
-                  tooltip: 'Reverse the trip',
+                  tooltip: L.of(context).reverseTrip,
                 ),
               ],
             ),
@@ -274,7 +274,7 @@ class _TopBar extends StatelessWidget {
           const SizedBox(height: Gap.sm),
           _MapButton(
             icon: Icons.center_focus_strong_rounded,
-            tooltip: 'Recentre the map',
+            tooltip: L.of(context).recentreMap,
             onTap: onRecentre,
           ),
         ],
@@ -384,12 +384,12 @@ class _ResultsSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Comparing routes…',
+                    L.of(context).comparingRoutes,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: Gap.xs),
                   Text(
-                    'Scoring each road segment against recent community reports.',
+                    L.of(context).scoringEachRoadSegmentAgainst,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: Gap.xl),
@@ -407,7 +407,7 @@ class _ResultsSheet extends StatelessWidget {
             ErrorStateView(
               message: routes.error ?? 'Route planning failed.',
               onRetry: onRetry,
-              secondaryLabel: 'Change destination',
+              secondaryLabel: L.of(context).changeDestination,
               onSecondary: () => Navigator.of(context).pop(),
             ),
           ],
@@ -418,12 +418,10 @@ class _ResultsSheet extends StatelessWidget {
             header,
             EmptyState(
               icon: Icons.near_me_disabled_outlined,
-              title: 'These places are too close together',
+              title: L.of(context).thesePlacesTooCloseTogether,
               message:
-                  'Your start and destination sit on the same junction of the '
-                  'road network, so there is nothing to compare. Pick a '
-                  'destination further away.',
-              primaryLabel: 'Change destination',
+                  L.of(context).startDestinationSitSameJunction,
+              primaryLabel: L.of(context).changeDestination,
               onPrimary: () => Navigator.of(context).pop(),
             ),
           ],
@@ -434,12 +432,10 @@ class _ResultsSheet extends StatelessWidget {
             header,
             EmptyState(
               icon: Icons.wrong_location_outlined,
-              title: 'No route between these points',
+              title: L.of(context).noRouteBetweenThesePoints,
               message:
-                  'This prototype covers one demo area of Bahawalpur, so not '
-                  'every pair of places is connected in the seeded road network. '
-                  'Try a different destination.',
-              primaryLabel: 'Change destination',
+                  L.of(context).prototypeCoversOneDemoArea,
+              primaryLabel: L.of(context).changeDestination,
               onPrimary: () => Navigator.of(context).pop(),
             ),
           ],
@@ -497,7 +493,7 @@ class _ReadyList extends StatelessWidget {
                     ),
                     const SizedBox(height: Gap.xxs),
                     Text(
-                      'Route awareness, never a safety score.',
+                      L.of(context).neverSafetyScore,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: Gap.md),
@@ -508,7 +504,7 @@ class _ReadyList extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Sort routes',
+                tooltip: L.of(context).sortRoutes,
                 onPressed: () => _sortSheet(context),
                 icon: const Icon(Icons.sort_rounded, size: 20),
               ),
@@ -519,10 +515,9 @@ class _ReadyList extends StatelessWidget {
         if (options.length == 1)
           Padding(
             padding: EdgeInsets.fromLTRB(gutter, Gap.md, gutter, 0),
-            child: const InfoPanel(
+            child: InfoPanel(
               text:
-                  'The seeded road network offers no meaningfully different '
-                  'alternative for this trip, so there is only one option to show.',
+                  L.of(context).seededRoadNetworkOffersNo,
               icon: Icons.info_outline,
               dense: true,
             ),
@@ -578,7 +573,7 @@ class _ReadyList extends StatelessWidget {
                 onPressed: () => Navigator.of(context)
                     .push(SlideUpRoute(child: const ReportFlowScreen())),
                 icon: const Icon(Icons.add_comment_outlined, size: 18),
-                label: const Text('Report an issue on this route'),
+                label: Text(L.of(context).reportIssueRoute),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
@@ -610,7 +605,7 @@ class _ReadyList extends StatelessWidget {
     final routes = context.read<RoutesProvider>();
     showSafarSheet<void>(
       context,
-      title: 'Sort routes',
+      title: L.of(context).sortRoutes,
       scrollable: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

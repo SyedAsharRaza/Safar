@@ -41,11 +41,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     if (_confirmed || _disputed) return;
     final ok = await confirmAction(
       context,
-      title: 'Confirm this report?',
+      title: L.of(context).confirmReport,
       message:
-          'Only confirm if you have seen this yourself. Confirmations are what '
-          'move a signal from unverified to confirmed.',
-      confirmLabel: 'Yes, I saw this',
+          L.of(context).onlyConfirmIfSeenYourself,
+      confirmLabel: L.of(context).yesISaw,
       icon: Icons.how_to_reg_outlined,
     );
     if (!ok || !mounted) return;
@@ -66,11 +65,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     if (_confirmed || _disputed) return;
     final ok = await confirmAction(
       context,
-      title: 'Dispute this report?',
+      title: L.of(context).disputeReport,
       message:
-          'Use this when the condition is no longer there, or was never there. '
-          'Two disputes mark the report as disputed for everyone.',
-      confirmLabel: 'Dispute it',
+          L.of(context).useWhenConditionNoLonger,
+      confirmLabel: L.of(context).dispute,
       destructive: true,
       icon: Icons.gpp_maybe_outlined,
     );
@@ -84,11 +82,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   Future<void> _withdraw(SafetyReport report) async {
     final ok = await confirmAction(
       context,
-      title: 'Withdraw your report?',
+      title: L.of(context).withdrawReport,
       message:
-          'It will stop affecting routes immediately and will no longer be '
-          'shown to other travellers.',
-      confirmLabel: 'Withdraw',
+          L.of(context).willStopAffectingRoutesImmediately,
+      confirmLabel: L.of(context).withdraw,
       destructive: true,
       icon: Icons.undo_rounded,
     );
@@ -107,13 +104,13 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
     if (report == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Report')),
+        appBar: AppBar(title: Text(L.of(context).report)),
         body: EmptyState(
           icon: Icons.search_off_rounded,
-          title: 'This report is no longer available',
+          title: L.of(context).reportNoLongerAvailable,
           message:
-              'It may have expired or been withdrawn by whoever submitted it.',
-          primaryLabel: 'Go back',
+              L.of(context).mayExpiredBeenWithdrawnWhoever,
+          primaryLabel: L.of(context).goBack,
           onPrimary: () => Navigator.of(context).pop(),
         ),
       );
@@ -214,13 +211,13 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                       CategoryChip(category: report.category, dense: false),
                       if (report.approximated)
                         Pill(
-                          label: 'Approximate location',
+                          label: L.of(context).approximateLocation,
                           icon: Icons.blur_on_rounded,
                           color: context.tokens.textSecondary,
                         ),
                       if (report.isMine)
                         Pill(
-                          label: 'Your report',
+                          label: L.of(context).report2,
                           icon: Icons.person_outline_rounded,
                           color: context.scheme.primary,
                         ),
@@ -231,11 +228,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   // --- Public text or withheld notice ---------------------------
                   if (withheld)
                     InfoPanel(
-                      title: 'Not published',
+                      title: L.of(context).published,
                       text:
-                          'This report was withheld because it appeared to '
-                          'identify a specific person. It never affected routes '
-                          'and no other traveller can see it.',
+                          L.of(context).reportWithheldBecauseAppeared,
                       icon: Icons.person_off_outlined,
                       tone: AppColors.danger,
                     )
@@ -245,7 +240,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('What travellers see', style: t.labelSmall),
+                          Text(L.of(context).whatTravellersSee, style: t.labelSmall),
                           const SizedBox(height: Gap.sm),
                           Text(
                             report.safePublicText,
@@ -264,12 +259,12 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('What you wrote', style: t.labelSmall),
+                          Text(L.of(context).whatYouWrote, style: t.labelSmall),
                           const SizedBox(height: Gap.sm - 2),
                           Text('"${report.description}"', style: t.bodySmall),
                           const SizedBox(height: Gap.sm),
                           Text(
-                            'Visible only to you.',
+                            L.of(context).visibleOnly,
                             style: t.labelMedium?.copyWith(
                               color: context.tokens.textTertiary,
                             ),
@@ -286,19 +281,19 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     tiles: [
                       StatTile(
                           value: report.severity.label,
-                          label: 'Severity',
+                          label: L.of(context).severity,
                           icon: Icons.speed_rounded,
                           tone: report.severity.color,
                         ),
                       StatTile(
                           value: '${report.confirmationCount}',
-                          label: 'Confirmations',
+                          label: L.of(context).confirmations,
                           icon: Icons.how_to_reg_outlined,
                           tone: AppColors.awarenessLow,
                         ),
                       StatTile(
                           value: '${report.disputeCount}',
-                          label: 'Disputes',
+                          label: L.of(context).disputes,
                           icon: Icons.thumb_down_outlined,
                           tone: AppColors.awarenessElevated,
                         ),
@@ -312,31 +307,31 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                       children: [
                         _Fact(
                           icon: Icons.alt_route_rounded,
-                          label: 'Route effect',
+                          label: L.of(context).routeEffect,
                           value: report.specificType.routeEffect,
                         ),
                         _Fact(
                           icon: Icons.hourglass_bottom_rounded,
-                          label: 'Expiry',
+                          label: L.of(context).expiry,
                           value: TimeUtils.untilExpiry(report.expiresAt),
                         ),
                         _Fact(
                           icon: Icons.translate_rounded,
-                          label: 'Reported in',
+                          label: L.of(context).reported,
                           value: report.language.label,
                         ),
                         _Fact(
                           icon: report.classifiedByAi
                               ? Icons.auto_awesome_rounded
                               : Icons.touch_app_outlined,
-                          label: 'Categorised',
+                          label: L.of(context).categorised,
                           value: report.classifiedByAi
                               ? 'Automatically, confirmed by the reporter'
                               : 'Manually by the reporter',
                         ),
                         _Fact(
                           icon: Icons.person_outline_rounded,
-                          label: 'Reported by',
+                          label: L.of(context).reported2,
                           value: report.anonymous && !report.isMine
                               ? 'Anonymous resident'
                               : report.reporterHandle,
@@ -361,11 +356,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     ),
                   ),
                   if (others.isEmpty)
-                    const InfoPanel(
+                    InfoPanel(
                       text:
-                          'This is the only live report on this stretch, so the '
-                          'signal rests on one person. Confirmations from other '
-                          'travellers make it more reliable.',
+                          L.of(context).onlyLiveReportStretchSo,
                       icon: Icons.person_outline_rounded,
                       dense: true,
                     )
@@ -426,7 +419,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   Widget _actions(BuildContext context, SafetyReport report) {
     if (report.isExpired) {
       return StickyActionBar(
-        note: 'Expired reports no longer affect routes.',
+        note: L.of(context).expiredReportsNoLongerAffect,
         primary: OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(L.of(context).back),
@@ -442,7 +435,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
             foregroundColor: context.scheme.error,
           ),
           icon: const Icon(Icons.undo_rounded, size: 18),
-          label: const Text('Withdraw this report'),
+          label: Text(L.of(context).withdrawReport2),
         ),
       );
     }

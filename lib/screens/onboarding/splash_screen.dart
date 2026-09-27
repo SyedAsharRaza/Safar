@@ -9,6 +9,7 @@ import '../../state/reports_provider.dart';
 import '../../widgets/common/brand.dart';
 import 'onboarding_screen.dart';
 import '../home/app_shell.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Splash. Loads the seeded community signals while the brand animates in, so
 /// the first real screen already has data.
@@ -105,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: Gap.lg),
                         Text(
-                          'Loading community signals for Bahawalpur',
+                          L.of(context).loadingCommunitySignalsBahawalpur,
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme

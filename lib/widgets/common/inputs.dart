@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Read-only field that looks like an input but opens a picker. Used for the
 /// origin/destination slots on the home screen.
@@ -137,7 +138,7 @@ class SafarSearchField extends StatelessWidget {
             prefixIconConstraints: const BoxConstraints(minWidth: 46),
             suffixIcon: value.text.isNotEmpty
                 ? IconButton(
-                    tooltip: 'Clear',
+                    tooltip: L.of(context).clear,
                     icon: const Icon(Icons.close_rounded, size: 18),
                     onPressed: () {
                       controller.clear();

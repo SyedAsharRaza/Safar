@@ -126,18 +126,18 @@ class _ReportSuccessScreenState extends State<ReportSuccessScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('What happens next', style: t.titleMedium),
+                    Text(L.of(context).whatHappensNext, style: t.titleMedium),
                     const SizedBox(height: Gap.md),
                     _Step(
                       icon: Icons.how_to_reg_outlined,
-                      title: 'Other travellers can confirm it',
+                      title: L.of(context).otherTravellersConfirm,
                       body:
                           'Two independent confirmations move it from unverified '
                           'to confirmed, which makes it count for more.',
                     ),
                     _Step(
                       icon: Icons.trending_down_rounded,
-                      title: 'It fades over time',
+                      title: L.of(context).fadesOverTime,
                       body: report?.expiresAt == null
                           ? 'Older reports gradually stop affecting routes.'
                           : '${TimeUtils.untilExpiry(report!.expiresAt)}. Older '
@@ -145,7 +145,7 @@ class _ReportSuccessScreenState extends State<ReportSuccessScreen>
                     ),
                     _Step(
                       icon: Icons.edit_outlined,
-                      title: 'You stay in control',
+                      title: L.of(context).stayControl,
                       body:
                           'You can correct the category or withdraw the report '
                           'from your reports list at any time.',
@@ -173,7 +173,7 @@ class _ReportSuccessScreenState extends State<ReportSuccessScreen>
                             color: context.scheme.primary,
                           ),
                           const SizedBox(width: Gap.sm),
-                          Text('Routes updated', style: t.titleSmall),
+                          Text(L.of(context).routesUpdated, style: t.titleSmall),
                         ],
                       ),
                       const SizedBox(height: Gap.md),
@@ -199,8 +199,7 @@ class _ReportSuccessScreenState extends State<ReportSuccessScreen>
                         ),
                       const SizedBox(height: Gap.sm),
                       Text(
-                        'Your report is already part of how these routes are '
-                        'scored.',
+                        L.of(context).reportAlreadyPartHowThese,
                         style: t.labelMedium?.copyWith(
                           color: context.tokens.textSecondary,
                         ),
@@ -235,7 +234,7 @@ class _ReportSuccessScreenState extends State<ReportSuccessScreen>
                   );
                 },
                 icon: const Icon(Icons.ios_share_rounded, size: 17),
-                label: const Text('Share this signal'),
+                label: Text(L.of(context).shareSignal),
               ),
       ),
     );

@@ -1,30 +1,11 @@
 import '../../models/app_notification.dart';
-import '../../models/trusted_contact.dart';
 import '../../models/user_profile.dart';
 
-abstract final class MockContacts {
-  static const List<TrustedContact> all = [
-    TrustedContact(
-      id: 'tc_01',
-      name: 'Ammi',
-      relation: 'Family',
-      phone: '+92 300 4412987',
-      isPrimary: true,
-    ),
-    TrustedContact(
-      id: 'tc_02',
-      name: 'Bilal Tariq',
-      relation: 'Brother',
-      phone: '+92 321 7745120',
-    ),
-    TrustedContact(
-      id: 'tc_03',
-      name: 'Hina Rasheed',
-      relation: 'Hostel roommate',
-      phone: '+92 333 9061844',
-    ),
-  ];
-}
+/// Trusted contacts are deliberately not seeded.
+///
+/// They are real people's names and phone numbers in a safety feature — an
+/// invented "Ammi · +92 300 4412987" on screen is both misleading and a little
+/// grim. The list starts empty and the user adds who they actually trust.
 
 abstract final class MockUser {
   static UserProfile profile() => UserProfile(

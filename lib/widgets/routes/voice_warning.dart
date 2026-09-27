@@ -217,7 +217,7 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
                 child: Text(widget.title, style: t.headlineSmall),
               ),
               Pill(
-                label: 'Text-to-speech preview',
+                label: L.of(context).textSpeechPreview,
                 icon: Icons.graphic_eq_rounded,
                 color: context.tokens.textSecondary,
                 dense: true,
@@ -312,7 +312,7 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
             const SizedBox(height: Gap.sm),
           ],
           Text(
-            'Warnings stay short so they are usable while travelling.',
+            L.of(context).warningsStayShortSoThey,
             style: t.labelMedium?.copyWith(color: context.tokens.textTertiary),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
@@ -6,13 +7,18 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/common/feedback.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
-/// Emergency helplines. Displayed only — this prototype does not place calls,
-/// and the sheet says so rather than implying it will dial.
+/// Emergency helplines.
+///
+/// Opens the dialer with the number pre-filled rather than placing the call
+/// outright. On a screen someone reaches while frightened, a mis-tap that
+/// silently dials the police is worse than one extra press — they get to see
+/// the number and confirm.
 Future<void> showEmergencySheet(BuildContext context) {
   return showSafarSheet<void>(
     context,
-    title: 'Emergency numbers',
+    title: L.of(context).emergencyNumbers,
     subtitle: AppText.notEmergency,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -22,12 +28,7 @@ Future<void> showEmergencySheet(BuildContext context) {
             padding: const EdgeInsets.only(bottom: Gap.sm),
             child: SafarCard(
               padding: const EdgeInsets.all(Gap.md),
-              onTap: () => Toast.show(
-                context,
-                'Dialling is not wired up in this UI build. The number is '
-                '${line.number}.',
-                tone: ToastTone.warning,
-              ),
+              onTap: () => _openDialer(context, line.number, line.name),
               child: Row(
                 children: [
                   Container(
@@ -71,21 +72,51 @@ Future<void> showEmergencySheet(BuildContext context) {
                   Icon(
                     Icons.call_outlined,
                     size: 19,
-                    color: context.tokens.textTertiary,
+                    color: AppColors.danger,
                   ),
                 ],
               ),
             ),
           ),
         const SizedBox(height: Gap.sm),
-        const InfoPanel(
+        InfoPanel(
           text:
-              'Reporting something here does not alert the authorities. If '
-              'someone is in danger, contact emergency services directly.',
+              L.of(context).reportingSomethingSafarDoesAlert,
           icon: Icons.warning_amber_rounded,
           tone: AppColors.danger,
         ),
       ],
     ),
+  );
+}
+
+
+/// Opens the phone dialer with [number] entered, without placing the call.
+///
+/// Uses `tel:` rather than a direct call so no permission is needed and the
+/// person always confirms. If no dialer can handle it — a tablet, say — the
+/// number is shown so it can still be read out or written down.
+Future<void> _openDialer(
+  BuildContext context,
+  String number,
+  String name,
+) async {
+  final uri = Uri(scheme: 'tel', path: number);
+  try {
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      _showNumberFallback(context, number, name);
+    }
+  } catch (_) {
+    if (context.mounted) _showNumberFallback(context, number, name);
+  }
+}
+
+void _showNumberFallback(BuildContext context, String number, String name) {
+  Toast.show(
+    context,
+    'No dialer on this device. $name is $number.',
+    tone: ToastTone.warning,
+    duration: const Duration(seconds: 8),
   );
 }

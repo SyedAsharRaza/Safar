@@ -121,10 +121,9 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
   void _changeCategory() {
     showSafarSheet<void>(
       context,
-      title: 'Choose the right category',
+      title: L.of(context).chooseRightCategory,
       subtitle:
-          'Your correction is what gets published. Corrections also help us '
-          'see where the classifier is weak.',
+          L.of(context).correctionWhatGetsPublishedCorrections,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -184,10 +183,12 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
 
     setState(() => _submitting = true);
 
+    // Captured up front so no BuildContext is used after an await.
     final reports = context.read<ReportsProvider>();
     final routes = context.read<RoutesProvider>();
     final app = context.read<AppState>();
     final notifications = context.read<NotificationsProvider>();
+    final l = L.of(context);
 
     final report = await reports.submit(
       result: result,
@@ -210,10 +211,8 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
         AppNotification(
           id: 'nt_${DateTime.now().microsecondsSinceEpoch}',
           kind: NotificationKind.reportWithheld,
-          title: 'Your report was not published',
-          body:
-              'It appeared to identify a specific person. Reports about '
-              'identifiable individuals are never published.',
+          title: l.reportNotPublishedTitle,
+          body: l.reportWithheldBody,
           createdAt: DateTime.now(),
           reportId: report.id,
         ),
@@ -235,10 +234,10 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
   Future<void> _cancel() async {
     final ok = await confirmAction(
       context,
-      title: 'Cancel this report?',
-      message: 'Nothing will be published and your text will not be saved.',
-      confirmLabel: 'Cancel report',
-      cancelLabel: 'Keep it',
+      title: L.of(context).cancelReport,
+      message: L.of(context).nothingWillPublishedTextWill,
+      confirmLabel: L.of(context).cancelReport2,
+      cancelLabel: L.of(context).keep,
       destructive: true,
       icon: Icons.close_rounded,
     );
@@ -253,7 +252,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Review before publishing'),
+        title: Text(L.of(context).reviewBeforePublishing),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
@@ -285,7 +284,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
         // --- Classifier unavailable -------------------------------------------
         if (_state == AiReviewState.failed) ...[
           InfoPanel(
-            title: 'Automatic reading unavailable',
+            title: L.of(context).automaticReadingUnavailable,
             text:
                 '$_failureReason The app has fallen back to the category you '
                 'picked, and route awareness still updates normally.',
@@ -293,7 +292,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
             tone: AppColors.awarenessModerate,
             action: TextButton(
               onPressed: _classify,
-              child: const Text('Try reading it again'),
+              child: Text(L.of(context).tryReadingAgain),
             ),
           ),
           const SizedBox(height: Gap.lg),
@@ -307,15 +306,14 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
         // --- Too vague ----------------------------------------------------------
         else if (invalid) ...[
           InfoPanel(
-            title: 'Not enough detail to publish',
+            title: L.of(context).enoughDetailPublish,
             text:
-                'We could not tell what this report is about. Add a few more '
-                'words, or pick the category yourself.',
+                L.of(context).couldTellWhatReportAbout,
             icon: Icons.help_outline_rounded,
             tone: AppColors.awarenessModerate,
             action: TextButton(
               onPressed: _changeCategory,
-              child: const Text('Choose a category myself'),
+              child: Text(L.of(context).chooseCategoryMyself),
             ),
           ),
           const SizedBox(height: Gap.lg),
@@ -323,7 +321,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
         // --- The normal path ----------------------------------------------------
         else ...[
           Text(
-            'We understood this as',
+            L.of(context).understoodAs,
             style: t.bodyMedium?.copyWith(color: context.tokens.textSecondary),
           ),
           const SizedBox(height: Gap.sm),
@@ -366,10 +364,9 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: Gap.lg),
               child: InfoPanel(
-                title: 'Low confidence',
+                title: L.of(context).confidenceLow,
                 text:
-                    'We are not sure this is right. Please check the category '
-                    'before publishing.',
+                    L.of(context).sureRightPleaseCheckCategory,
                 icon: Icons.priority_high_rounded,
                 tone: AppColors.awarenessElevated,
               ),
@@ -379,11 +376,9 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: Gap.lg),
               child: InfoPanel(
-                title: 'Someone may have reported this already',
+                title: L.of(context).someoneMayReportedAlready,
                 text:
-                    'A very similar report was submitted nearby in the last '
-                    '45 minutes. Publishing yours will count as a confirmation, '
-                    'which makes the signal stronger.',
+                    L.of(context).verySimilarReportSubmittedNearby,
                 icon: Icons.copy_all_outlined,
                 tone: AppColors.brand,
               ),
@@ -402,7 +397,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
                       color: context.tokens.textSecondary,
                     ),
                     const SizedBox(width: Gap.sm),
-                    Text('What other travellers will see', style: t.titleSmall),
+                    Text(L.of(context).whatOthersSee, style: t.titleSmall),
                   ],
                 ),
                 const SizedBox(height: Gap.md),
@@ -427,13 +422,13 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
                     ),
                     if (_corrected)
                       Pill(
-                        label: 'You corrected this',
+                        label: L.of(context).corrected,
                         icon: Icons.edit_outlined,
                         color: context.scheme.primary,
                         dense: true,
                       ),
                     Pill(
-                      label: 'Unverified until confirmed',
+                      label: L.of(context).unverifiedUntilConfirmed,
                       icon: Icons.schedule_outlined,
                       color: AppColors.awarenessModerate,
                       dense: true,
@@ -461,7 +456,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Effect on routing', style: t.titleSmall),
+                      Text(L.of(context).effectRouting, style: t.titleSmall),
                       const SizedBox(height: 1),
                       Text(
                         '${result.specificType.routeEffect} on ${widget.areaName}',
@@ -487,13 +482,12 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('What you wrote', style: t.labelSmall),
+                Text(L.of(context).whatYouWrote, style: t.labelSmall),
                 const SizedBox(height: Gap.sm - 2),
                 Text('"${widget.description}"', style: t.bodySmall),
                 const SizedBox(height: Gap.sm),
                 Text(
-                  'Only you can see your original wording. Others see the '
-                  'neutral summary above.',
+                  L.of(context).onlySeeOriginalWordingOthers,
                   style: t.labelMedium
                       ?.copyWith(color: context.tokens.textTertiary),
                 ),
@@ -531,14 +525,14 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
 
     if (blocked) {
       return StickyActionBar(
-        note: 'Nothing about an identifiable person will be published.',
+        note: L.of(context).nothingAboutIdentifiablePersonWill,
         primary: FilledButton(
           onPressed: _submitting ? null : _confirm,
-          child: const Text('I understand — go back'),
+          child: Text(L.of(context).iUnderstandGoBack),
         ),
         secondary: OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Edit my description'),
+          child: Text(L.of(context).editMyDescription),
         ),
       );
     }
@@ -574,7 +568,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.scheme.error,
               ),
-              child: const Text('Cancel'),
+              child: Text(L.of(context).cancel),
             ),
           ),
         ],
@@ -606,7 +600,7 @@ class _Thinking extends StatelessWidget {
         ),
         const SizedBox(height: Gap.xl),
         Text(
-          'Reading your report…',
+          L.of(context).readingReport,
           textAlign: TextAlign.center,
           style: t.headlineSmall,
         ),
@@ -712,7 +706,7 @@ class _BlockedCard extends StatelessWidget {
               const SizedBox(width: Gap.md),
               Expanded(
                 child: Text(
-                  'This report cannot be published',
+                  L.of(context).cannotPublish,
                   style: t.titleLarge?.copyWith(color: context.scheme.error),
                 ),
               ),
@@ -722,8 +716,7 @@ class _BlockedCard extends StatelessWidget {
           Text(reason, style: t.bodyMedium?.copyWith(height: 1.5)),
           const SizedBox(height: Gap.md),
           Text(
-            'You can still report the condition itself — for example "this lane '
-            'feels unsafe at night" — without describing a person.',
+            L.of(context).stillReportConditionItselfExample,
             style: t.bodySmall?.copyWith(height: 1.5),
           ),
         ],
@@ -769,7 +762,7 @@ class _JsonPeekState extends State<_JsonPeek> {
                 const SizedBox(width: Gap.sm),
                 Expanded(
                   child: Text(
-                    'Structured output',
+                    L.of(context).structuredOutput,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),

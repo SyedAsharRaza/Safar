@@ -66,12 +66,11 @@ class _CheckinSetupScreenState extends State<CheckinSetupScreen> {
       // of quietly starting a second timer.
       final open = await confirmAction(
         context,
-        title: 'A check-in is already running',
+        title: L.of(context).checkAlreadyRunning,
         message:
-            'You can only have one check-in at a time. Open the running one, or '
-            'cancel it first.',
-        confirmLabel: 'Open it',
-        cancelLabel: 'Stay here',
+            L.of(context).onlyOneCheckTimeOpen,
+        confirmLabel: L.of(context).open2,
+        cancelLabel: L.of(context).stayHere,
         icon: Icons.timer_rounded,
       );
       if (open && mounted) {
@@ -88,12 +87,11 @@ class _CheckinSetupScreenState extends State<CheckinSetupScreen> {
     if (contacts.isEmpty) {
       final proceed = await confirmAction(
         context,
-        title: 'Start without a contact?',
+        title: L.of(context).startWithoutContact,
         message:
-            'Nobody will be told if you do not check in. The timer will still '
-            'remind you, but a check-in works best when someone knows.',
-        confirmLabel: 'Start anyway',
-        cancelLabel: 'Choose a contact',
+            L.of(context).nobodyWillToldIfDo,
+        confirmLabel: L.of(context).startAnyway,
+        cancelLabel: L.of(context).chooseContact,
         icon: Icons.person_off_outlined,
       );
       if (!proceed || !mounted) return;
@@ -138,14 +136,13 @@ class _CheckinSetupScreenState extends State<CheckinSetupScreen> {
           ),
           const SizedBox(height: Gap.sm),
           Text(
-            'Set a timer. If you do not confirm you arrived, your trusted '
-            'contacts are reminded to check on you.',
+            L.of(context).setTimerIfDoConfirm,
             style: t.bodyMedium?.copyWith(height: 1.5),
           ),
           const SizedBox(height: Gap.xl),
 
           // --- Duration ---------------------------------------------------------
-          Text('How long do you expect to take?', style: t.titleMedium),
+          Text(L.of(context).howLongDoExpectTake, style: t.titleMedium),
           const SizedBox(height: Gap.md),
           Wrap(
             spacing: Gap.sm,
@@ -179,13 +176,13 @@ class _CheckinSetupScreenState extends State<CheckinSetupScreen> {
           Row(
             children: [
               Expanded(
-                child: Text('Who should be notified?', style: t.titleMedium),
+                child: Text(L.of(context).whoShouldNotified, style: t.titleMedium),
               ),
               TextButton.icon(
                 onPressed: () => Navigator.of(context)
                     .push(SlideRoute(child: const ContactsScreen())),
                 icon: const Icon(Icons.edit_outlined, size: 16),
-                label: const Text('Manage'),
+                label: Text(L.of(context).manage),
               ),
             ],
           ),
@@ -196,10 +193,10 @@ class _CheckinSetupScreenState extends State<CheckinSetupScreen> {
               child: EmptyState(
                 compact: true,
                 icon: Icons.person_add_alt_1_outlined,
-                title: 'No trusted contacts yet',
+                title: L.of(context).noTrustedContactsYet,
                 message:
-                    'Add someone you would want to know if you did not arrive.',
-                primaryLabel: 'Add a contact',
+                    L.of(context).addSomeoneWouldWantKnow,
+                primaryLabel: L.of(context).addContact,
                 onPrimary: () => Navigator.of(context)
                     .push(SlideRoute(child: const ContactsScreen())),
               ),
@@ -223,9 +220,9 @@ class _CheckinSetupScreenState extends State<CheckinSetupScreen> {
           SettingGroup(
             children: [
               SettingRow(
-                title: 'Share my live position',
+                title: L.of(context).shareMyLivePosition,
                 subtitle:
-                    'Simulated in this build — no location permission is used',
+                    L.of(context).simulatedBuildNoLocationPermission,
                 icon: Icons.share_location_rounded,
                 switchValue: _shareLocation,
                 onSwitch: (v) => setState(() => _shareLocation = v),
@@ -303,7 +300,7 @@ class _ContactRow extends StatelessWidget {
                     if (contact.isPrimary) ...[
                       const SizedBox(width: Gap.sm),
                       Pill(
-                        label: 'Primary',
+                        label: L.of(context).primary,
                         color: context.scheme.tertiary,
                         dense: true,
                       ),

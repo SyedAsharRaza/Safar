@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../models/taxonomy.dart';
 import '../../widgets/common/badges.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Explains the awareness model in plain language, including what it cannot do.
 class HelpScreen extends StatelessWidget {
@@ -18,11 +19,11 @@ class HelpScreen extends StatelessWidget {
     final t = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('How it works')),
+      appBar: AppBar(title: Text(L.of(context).howWorks)),
       body: ListView(
         padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.x4l),
         children: [
-          Text('Route awareness, not a safety score', style: t.headlineMedium),
+          Text(L.of(context).routeAwarenessSafetyScore, style: t.headlineMedium),
           const SizedBox(height: Gap.sm),
           Text(
             AppText.awarenessExplainer,
@@ -35,7 +36,7 @@ class HelpScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('The four levels', style: t.titleMedium),
+                Text(L.of(context).fourLevels, style: t.titleMedium),
                 const SizedBox(height: Gap.md),
                 for (final level in AwarenessLevel.values)
                   Padding(
@@ -77,11 +78,10 @@ class HelpScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('What goes into the number', style: t.titleMedium),
+                Text(L.of(context).whatGoesIntoNumber, style: t.titleMedium),
                 const SizedBox(height: Gap.sm),
                 Text(
-                  'Each road segment gets a score from five weighted inputs. A '
-                  'route is the length-weighted average of its segments.',
+                  L.of(context).eachRoadSegmentGetsScore,
                   style: t.bodySmall?.copyWith(height: 1.45),
                 ),
                 const SizedBox(height: Gap.md),
@@ -109,10 +109,9 @@ class HelpScreen extends StatelessWidget {
                     ),
                   ),
                 const SizedBox(height: Gap.sm),
-                const InfoPanel(
+                InfoPanel(
                   text:
-                      'These weights are prototype values chosen for a sensible '
-                      'demo. They are not validated against real incident data.',
+                      L.of(context).theseWeightsPrototypeValuesChosen,
                   icon: Icons.science_outlined,
                   dense: true,
                 ),
@@ -126,12 +125,10 @@ class HelpScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Newer reports count for more', style: t.titleMedium),
+                Text(L.of(context).newerReportsCountMore, style: t.titleMedium),
                 const SizedBox(height: Gap.sm),
                 Text(
-                  'Every report loses influence as it ages, and how fast depends '
-                  'on the kind of problem. An accident stops mattering within '
-                  'hours; a broken streetlight stays relevant for days.',
+                  L.of(context).everyReportLosesInfluenceAges,
                   style: t.bodySmall?.copyWith(height: 1.5),
                 ),
                 const SizedBox(height: Gap.md),
@@ -165,7 +162,7 @@ class HelpScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('How reports earn trust', style: t.titleMedium),
+                Text(L.of(context).howReportsEarnTrust, style: t.titleMedium),
                 const SizedBox(height: Gap.md),
                 for (final status in [
                   ReportStatus.unverified,
@@ -208,7 +205,7 @@ class HelpScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('What each report does to routing', style: t.titleMedium),
+                Text(L.of(context).whatEachReportDoesRouting, style: t.titleMedium),
                 const SizedBox(height: Gap.md),
                 for (final type in [
                   SpecificType.roadBlockage,
@@ -245,10 +242,10 @@ class HelpScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: Gap.lg),
-          const InfoPanel(
+          InfoPanel(
             text: AppText.disclaimer,
             icon: Icons.shield_outlined,
-            title: 'The honest caveat',
+            title: L.of(context).honestCaveat,
           ),
           const SizedBox(height: Gap.md),
           const InfoPanel(

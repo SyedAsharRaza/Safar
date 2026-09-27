@@ -7,6 +7,7 @@ import '../../models/safety_report.dart';
 import '../../models/taxonomy.dart';
 import '../common/badges.dart';
 import '../common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 /// The standard community-signal row. Used on the explore list, route details,
 /// my-reports and the home feed, so the signal always reads the same way.
@@ -163,14 +164,14 @@ class ReportCard extends StatelessWidget {
                   ),
                 if (report.approximated)
                   Pill(
-                    label: 'Approximate location',
+                    label: L.of(context).approximateLocation,
                     icon: Icons.blur_on_rounded,
                     color: context.tokens.textSecondary,
                     dense: true,
                   ),
                 if (!report.classifiedByAi && !withheld)
                   Pill(
-                    label: 'Manually categorised',
+                    label: L.of(context).manuallyCategorised,
                     icon: Icons.touch_app_outlined,
                     color: context.tokens.textSecondary,
                     dense: true,

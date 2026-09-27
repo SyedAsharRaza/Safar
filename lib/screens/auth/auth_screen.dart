@@ -11,6 +11,7 @@ import '../../state/reports_provider.dart';
 import '../../widgets/common/brand.dart';
 import '../../widgets/common/feedback.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 enum AuthMode { signIn, signUp }
 
@@ -211,9 +212,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 enabled: !_busy,
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Name (optional)',
-                  hintText: 'Shown only to you',
+                decoration: InputDecoration(
+                  labelText: L.of(context).nameOptional,
+                  hintText: L.of(context).shownOnly,
                   prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
                 ),
               ),
@@ -231,8 +232,8 @@ class _AuthScreenState extends State<AuthScreen> {
                 LengthLimitingTextInputFormatter(18),
               ],
               validator: _validatePhone,
-              decoration: const InputDecoration(
-                labelText: 'Mobile number',
+              decoration: InputDecoration(
+                labelText: L.of(context).mobileNumber,
                 hintText: '0300 1234567',
                 prefixIcon: Icon(Icons.phone_outlined, size: 20),
               ),
@@ -247,7 +248,7 @@ class _AuthScreenState extends State<AuthScreen> {
               onFieldSubmitted: (_) => _submit(),
               validator: _validatePassword,
               decoration: InputDecoration(
-                labelText: 'Password',
+                labelText: L.of(context).password,
                 hintText: _isSignUp ? 'At least 8 characters' : null,
                 prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
                 suffixIcon: IconButton(
@@ -296,16 +297,14 @@ class _AuthScreenState extends State<AuthScreen> {
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: const Text('Continue without an account'),
+              child: Text(L.of(context).continueWithoutAccount),
             ),
 
             const SizedBox(height: Gap.xl),
-            const InfoPanel(
-              title: 'You do not need an account',
+            InfoPanel(
+              title: L.of(context).doNeedAccount,
               text:
-                  'Reporting, routes and check-ins all work anonymously. Your '
-                  'number is never shown to other travellers and never attached '
-                  'to a published report.',
+                  L.of(context).reportingRoutesCheckInsAll,
               icon: Icons.lock_outline_rounded,
               tone: AppColors.teal,
             ),

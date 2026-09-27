@@ -11,6 +11,7 @@ import '../common/badges.dart';
 import 'google_map_view.dart';
 import 'map_painter.dart';
 import 'mock_map.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Which map surface to render.
 enum MapMode {
@@ -185,7 +186,7 @@ class SafarMapState extends State<SafarMap> {
           left: Gap.md,
           top: Gap.md,
           child: Pill(
-            label: 'Offline map',
+            label: L.of(context).offlineMap,
             icon: Icons.brush_outlined,
             color: context.tokens.textSecondary,
             background: context.scheme.surface.withValues(alpha: 0.94),

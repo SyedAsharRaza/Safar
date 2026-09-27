@@ -24,10 +24,9 @@ class ContactsScreen extends StatelessWidget {
 
     final added = await showSafarSheet<bool>(
       context,
-      title: 'Add a trusted contact',
+      title: L.of(context).addTrustedContact,
       subtitle:
-          'Someone who would notice if you did not arrive. Stored on this device '
-          'only.',
+          L.of(context).someoneWhoWouldNoticeIf,
       child: Form(
         key: formKey,
         child: Column(
@@ -35,7 +34,7 @@ class ContactsScreen extends StatelessWidget {
             TextFormField(
               controller: nameController,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: L.of(context).name),
               validator: (v) => (v == null || v.trim().length < 2)
                   ? 'Enter a name of at least 2 characters'
                   : null,
@@ -44,17 +43,17 @@ class ContactsScreen extends StatelessWidget {
             TextFormField(
               controller: relationController,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Relationship',
-                hintText: 'Family, roommate, colleague…',
+              decoration: InputDecoration(
+                labelText: L.of(context).relationship,
+                hintText: L.of(context).familyRoommateColleague,
               ),
             ),
             const SizedBox(height: Gap.md),
             TextFormField(
               controller: phoneController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Phone number',
+              decoration: InputDecoration(
+                labelText: L.of(context).phoneNumber,
                 hintText: '+92 300 0000000',
               ),
               validator: (v) {
@@ -77,7 +76,7 @@ class ContactsScreen extends StatelessWidget {
                 Navigator.of(sheetContext).pop(true);
               }
             },
-            child: const Text('Add contact'),
+            child: Text(L.of(context).addContact2),
           ),
         ),
       ),
@@ -114,20 +113,18 @@ class ContactsScreen extends StatelessWidget {
       body: checkin.contacts.isEmpty
           ? EmptyState(
               icon: Icons.person_add_alt_1_outlined,
-              title: 'No trusted contacts',
+              title: L.of(context).noTrustedContacts,
               message:
-                  'Add someone you would want to be told if you did not arrive. '
-                  'Their number stays on this device.',
-              primaryLabel: 'Add your first contact',
+                  L.of(context).addSomeoneWouldWantTold,
+              primaryLabel: L.of(context).addFirstContact,
               onPrimary: () => _add(context),
             )
           : ListView(
               padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.x4l),
               children: [
-                const InfoPanel(
+                InfoPanel(
                   text:
-                      'Contacts are stored on this device only. Safar '
-                      'does not upload your contact list.',
+                      L.of(context).contactsStoredDeviceOnlySafar,
                   icon: Icons.lock_outline_rounded,
                   dense: true,
                 ),
@@ -172,7 +169,7 @@ class ContactsScreen extends StatelessWidget {
                                     if (c.isPrimary) ...[
                                       const SizedBox(width: Gap.sm),
                                       Pill(
-                                        label: 'Primary',
+                                        label: L.of(context).primary,
                                         color: context.scheme.tertiary,
                                         dense: true,
                                       ),
@@ -208,9 +205,8 @@ class ContactsScreen extends StatelessWidget {
                                   context,
                                   title: 'Remove ${c.name}?',
                                   message:
-                                      'They will no longer be offered when you '
-                                      'start a check-in.',
-                                  confirmLabel: 'Remove',
+                                      L.of(context).theyWillNoLongerOffered,
+                                  confirmLabel: L.of(context).remove,
                                   destructive: true,
                                   icon: Icons.person_remove_outlined,
                                 );
@@ -224,9 +220,9 @@ class ContactsScreen extends StatelessWidget {
                             },
                             itemBuilder: (context) => [
                               if (!c.isPrimary)
-                                const PopupMenuItem(
+                                PopupMenuItem(
                                   value: 'primary',
-                                  child: Text('Make primary'),
+                                  child: Text(L.of(context).makePrimary),
                                 ),
                               PopupMenuItem(
                                 value: 'remove',
@@ -245,7 +241,7 @@ class ContactsScreen extends StatelessWidget {
           : FloatingActionButton.extended(
               onPressed: () => _add(context),
               icon: const Icon(Icons.person_add_alt_1_rounded, size: 19),
-              label: const Text('Add contact'),
+              label: Text(L.of(context).addContact2),
             ),
     );
   }

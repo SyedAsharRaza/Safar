@@ -18,6 +18,7 @@ import '../../widgets/map/safar_map.dart';
 import '../../widgets/reports/report_card.dart';
 import '../report/report_detail_screen.dart';
 import '../report/report_flow_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Full-screen map of every community signal, with category filters and a
 /// draggable list underneath.
@@ -106,7 +107,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               children: [
                 _Control(
                   icon: Icons.center_focus_strong_rounded,
-                  tooltip: 'Recentre',
+                  tooltip: L.of(context).recentre,
                   onTap: () => _mapKey.currentState?.recentre(),
                 ),
                 const SizedBox(height: Gap.sm),
@@ -230,7 +231,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                     const SizedBox(height: Gap.xxs),
                     Text(
-                      'Tap a pin on the map, or scroll the list.',
+                      L.of(context).tapPinMapScrollList,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -249,21 +250,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ? EmptyState(
                     compact: true,
                     icon: Icons.filter_alt_off_outlined,
-                    title: 'Nothing matches these filters',
+                    title: L.of(context).nothingMatchesTheseFilters,
                     message:
-                        'No live reports in the categories you selected. Clear '
-                        'the filters to see everything in the demo area.',
-                    primaryLabel: 'Clear filters',
+                        L.of(context).noLiveReportsCategoriesSelected,
+                    primaryLabel: L.of(context).clearFilters,
                     onPrimary: reports.clearFilters,
                   )
                 : EmptyState(
                     compact: true,
                     icon: Icons.map_outlined,
-                    title: 'No signals in this area yet',
+                    title: L.of(context).noSignalsAreaYet,
                     message:
-                        'Limited data is not the same as a clear road. If you '
-                        'see something, you can be the first to report it.',
-                    primaryLabel: 'Add a report',
+                        L.of(context).limitedDataSameClearRoad,
+                    primaryLabel: L.of(context).addReport,
                     onPrimary: () => Navigator.of(context)
                         .push(SlideUpRoute(child: const ReportFlowScreen())),
                   ),

@@ -84,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Settings',
+                tooltip: L.of(context).settings,
                 onPressed: () => Navigator.of(context)
                     .push(SlideRoute(child: const SettingsScreen())),
                 icon: const Icon(Icons.settings_outlined, size: 22),
@@ -94,21 +94,18 @@ class ProfileScreen extends StatelessWidget {
 
           const SizedBox(height: Gap.lg),
           if (app.hasAccount)
-            const InfoPanel(
+            InfoPanel(
               text:
-                  'Your reports are still published anonymously. Other travellers '
-                  'never see your name or number — the account only keeps your '
-                  'history if you change phone.',
+                  L.of(context).reportsStillPublishedAnonymouslyOther,
               icon: Icons.verified_user_outlined,
               tone: AppColors.teal,
               dense: true,
             )
           else
             InfoPanel(
-              title: 'You are anonymous',
+              title: L.of(context).anonymous,
               text:
-                  'Everything works without an account. Adding one keeps your '
-                  'reports and saved places if you change phone.',
+                  L.of(context).everythingWorksWithoutAccountAdding,
               icon: Icons.visibility_off_outlined,
               action: TextButton(
                 onPressed: () => Navigator.of(context).push(
@@ -116,7 +113,7 @@ class ProfileScreen extends StatelessWidget {
                     child: const AuthScreen(initialMode: AuthMode.signUp),
                   ),
                 ),
-                child: const Text('Create an account'),
+                child: Text(L.of(context).createAccount),
               ),
             ),
 
@@ -130,18 +127,18 @@ class ProfileScreen extends StatelessWidget {
             tiles: [
               StatTile(
                   value: '${profile.reportsSubmitted}',
-                  label: 'Reports made',
+                  label: L.of(context).reportsMade,
                   icon: Icons.campaign_outlined,
                 ),
               StatTile(
                   value: '${profile.confirmationsGiven}',
-                  label: 'Signals confirmed',
+                  label: L.of(context).signalsConfirmed,
                   icon: Icons.how_to_reg_outlined,
                   tone: AppColors.teal,
                 ),
               StatTile(
                   value: '${profile.tripsCompared}',
-                  label: 'Trips compared',
+                  label: L.of(context).tripsCompared,
                   icon: Icons.alt_route_rounded,
                   tone: AppColors.accentDeep,
                 ),
@@ -151,7 +148,7 @@ class ProfileScreen extends StatelessWidget {
           // --- Shortcuts --------------------------------------------------------------
           const SizedBox(height: Gap.xl),
           SettingGroup(
-            title: 'Your stuff',
+            title: L.of(context).stuff,
             children: [
               SettingRow(
                 title: L.of(context).savedPlaces,
@@ -188,7 +185,7 @@ class ProfileScreen extends StatelessWidget {
           // --- Preferences -------------------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'Preferences',
+            title: L.of(context).preferences,
             children: [
               SettingRow(
                 title: L.of(context).language,
@@ -198,7 +195,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               SettingRow(
                 title: L.of(context).voiceWarnings,
-                subtitle: 'Short spoken alerts before you set off',
+                subtitle: L.of(context).shortSpokenAlertsBeforeSet,
                 icon: Icons.volume_up_outlined,
                 switchValue: app.voiceWarnings,
                 onSwitch: app.toggleVoiceWarnings,
@@ -214,7 +211,7 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => _themeSheet(context, app),
               ),
               SettingRow(
-                title: 'All settings',
+                title: L.of(context).allSettings,
                 icon: Icons.tune_rounded,
                 onTap: () => Navigator.of(context)
                     .push(SlideRoute(child: const SettingsScreen())),
@@ -225,16 +222,16 @@ class ProfileScreen extends StatelessWidget {
           // --- About -------------------------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'About',
+            title: L.of(context).about,
             children: [
               SettingRow(
-                title: 'How route awareness works',
+                title: L.of(context).howRouteAwarenessWorks,
                 icon: Icons.help_outline_rounded,
                 onTap: () => Navigator.of(context)
                     .push(SlideRoute(child: const HelpScreen())),
               ),
               SettingRow(
-                title: 'About Safar',
+                title: L.of(context).aboutSafar,
                 icon: Icons.info_outline_rounded,
                 onTap: () => Navigator.of(context)
                     .push(SlideRoute(child: const AboutScreen())),
@@ -242,17 +239,16 @@ class ProfileScreen extends StatelessWidget {
               if (app.hasAccount)
                 SettingRow(
                   title: L.of(context).signOut,
-                  subtitle: 'Return to anonymous use on this phone',
+                  subtitle: L.of(context).returnAnonymousUsePhone,
                   icon: Icons.logout_rounded,
                   destructive: true,
                   onTap: () async {
                     final ok = await confirmAction(
                       context,
-                      title: 'Sign out?',
+                      title: L.of(context).signOut2,
                       message:
-                          'You will keep using Safar anonymously. Your reports '
-                          'stay on your account and come back when you sign in.',
-                      confirmLabel: 'Sign out',
+                          L.of(context).willKeepUsingSafarAnonymously,
+                      confirmLabel: L.of(context).signOut,
                       destructive: true,
                       icon: Icons.logout_rounded,
                     );
@@ -270,7 +266,7 @@ class ProfileScreen extends StatelessWidget {
               else
                 SettingRow(
                   title: L.of(context).signIn,
-                  subtitle: 'Bring reports from another phone',
+                  subtitle: L.of(context).bringReportsAnotherPhone,
                   icon: Icons.login_rounded,
                   onTap: () => Navigator.of(context).push(
                     SlideUpRoute(child: const AuthScreen()),
@@ -284,7 +280,7 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  '${AppText.appName} · UI prototype',
+                  AppText.appName,
                   style: t.labelMedium
                       ?.copyWith(color: context.tokens.textTertiary),
                 ),
@@ -306,7 +302,7 @@ class ProfileScreen extends StatelessWidget {
     showSafarSheet<void>(
       context,
       title: L.of(context).language,
-      subtitle: 'Sets voice warnings and prompt wording.',
+      subtitle: L.of(context).setsVoiceWarningsPromptWording,
       scrollable: false,
       child: Column(
         children: [
@@ -425,8 +421,7 @@ class _TierCard extends StatelessWidget {
           ),
           const SizedBox(height: Gap.md),
           Text(
-            'Tiers recognise contribution. They never make a report count as '
-            'verified — only confirmations from other travellers do that.',
+            L.of(context).tiersRecogniseContributionTheyNever,
             style: t.labelMedium?.copyWith(color: context.tokens.textTertiary),
           ),
         ],

@@ -20,13 +20,13 @@ class SavedPlacesScreen extends StatelessWidget {
     final controller = TextEditingController(text: current ?? '');
     final saved = await showSafarSheet<bool>(
       context,
-      title: 'Label this place',
-      subtitle: 'A short name like "Home", "Work" or "Ammi\'s house".',
+      title: L.of(context).labelPlace,
+      subtitle: L.of(context).shortNameLikeHomeWork,
       child: TextField(
         controller: controller,
         autofocus: true,
         textCapitalization: TextCapitalization.words,
-        decoration: const InputDecoration(labelText: 'Label (optional)'),
+        decoration: InputDecoration(labelText: L.of(context).labelOptional),
       ),
       footer: Builder(
         builder: (sheetContext) => Row(
@@ -34,14 +34,14 @@ class SavedPlacesScreen extends StatelessWidget {
             Expanded(
               child: OutlinedButton(
                 onPressed: () => Navigator.of(sheetContext).pop(false),
-                child: const Text('Cancel'),
+                child: Text(L.of(context).cancel),
               ),
             ),
             const SizedBox(width: Gap.md),
             Expanded(
               child: FilledButton(
                 onPressed: () => Navigator.of(sheetContext).pop(true),
-                child: const Text('Save'),
+                child: Text(L.of(context).save),
               ),
             ),
           ],
@@ -67,11 +67,10 @@ class SavedPlacesScreen extends StatelessWidget {
       body: places.saved.isEmpty
           ? EmptyState(
               icon: Icons.bookmark_border_rounded,
-              title: 'No saved places',
+              title: L.of(context).noSavedPlaces,
               message:
-                  'Tap the bookmark next to any place while searching, and it '
-                  'will appear here for one-tap routing.',
-              primaryLabel: 'Back',
+                  L.of(context).tapBookmarkNextAnyPlace,
+              primaryLabel: L.of(context).back,
               onPrimary: () => Navigator.of(context).pop(),
             )
           : ListView(
@@ -138,9 +137,8 @@ class SavedPlacesScreen extends StatelessWidget {
                                       context,
                                       title: 'Remove ${s.title}?',
                                       message:
-                                          'It will no longer appear in your '
-                                          'saved places.',
-                                      confirmLabel: 'Remove',
+                                          L.of(context).willNoLongerAppear,
+                                      confirmLabel: L.of(context).remove,
                                       destructive: true,
                                       icon: Icons.bookmark_remove_outlined,
                                     );
@@ -158,7 +156,7 @@ class SavedPlacesScreen extends StatelessWidget {
                                 itemBuilder: (context) => [
                                   PopupMenuItem(
                                     value: 'label',
-                                    child: Text('Change label'),
+                                    child: Text(L.of(context).changeLabel),
                                   ),
                                   PopupMenuItem(
                                     value: 'remove',
@@ -200,7 +198,7 @@ class SavedPlacesScreen extends StatelessWidget {
                               );
                             },
                             icon: const Icon(Icons.alt_route_rounded, size: 17),
-                            label: const Text('Route here'),
+                            label: Text(L.of(context).routeHere),
                             style: OutlinedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 46),
                             ),

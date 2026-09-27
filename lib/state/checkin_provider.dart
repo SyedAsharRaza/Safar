@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/mock/mock_misc.dart';
 import '../models/safety_checkin.dart';
 import '../models/trusted_contact.dart';
 
@@ -11,12 +12,22 @@ import '../models/trusted_contact.dart';
 /// No message is actually sent anywhere — the notification to contacts is
 /// simulated, and every screen that mentions it says so.
 class CheckinProvider extends ChangeNotifier {
-  CheckinProvider() : _contacts = [...MockContacts.all];
+  CheckinProvider() {
+    _restoreContacts();
+  }
+
+  static const _contactsKey = 'safar_trusted_contacts';
 
   SafetyCheckin? _active;
   final List<SafetyCheckin> _history = [];
-  List<TrustedContact> _contacts;
+
+  /// Starts empty. Contacts are whoever the user actually adds — seeding them
+  /// with invented names would put fake people in a safety feature.
+  List<TrustedContact> _contacts = [];
   Timer? _ticker;
+
+  bool _contactsLoaded = false;
+  bool get contactsLoaded => _contactsLoaded;
 
   SafetyCheckin? get active => _active;
   List<SafetyCheckin> get history => List.unmodifiable(_history.reversed);
@@ -93,13 +104,77 @@ class CheckinProvider extends ChangeNotifier {
     });
   }
 
+  /// Contacts live on this device only — they are never uploaded, so a
+  /// check-in never puts someone else's number on a server.
+  Future<void> _restoreContacts() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_contactsKey);
+      if (raw != null && raw.isNotEmpty) {
+        final list = (jsonDecode(raw) as List<dynamic>)
+            .cast<Map<String, dynamic>>();
+        _contacts = list
+            .map((m) => TrustedContact(
+                  id: m['id'] as String,
+                  name: m['name'] as String,
+                  relation: m['relation'] as String? ?? 'Contact',
+                  phone: m['phone'] as String? ?? '',
+                  isPrimary: m['isPrimary'] as bool? ?? false,
+                ))
+            .toList();
+      }
+    } catch (_) {
+      // Corrupt storage should not stop the app starting.
+      _contacts = [];
+    }
+    _contactsLoaded = true;
+    notifyListeners();
+  }
+
+  Future<void> _persistContacts() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        _contactsKey,
+        jsonEncode([
+          for (final c in _contacts)
+            {
+              'id': c.id,
+              'name': c.name,
+              'relation': c.relation,
+              'phone': c.phone,
+              'isPrimary': c.isPrimary,
+            },
+        ]),
+      );
+    } catch (_) {
+      // Keep the in-memory list even if it could not be written.
+    }
+  }
+
   void addContact(TrustedContact c) {
-    _contacts = [..._contacts, c];
+    // The first contact added becomes primary, so a check-in always has
+    // someone to notify without an extra step.
+    final isFirst = _contacts.isEmpty;
+    _contacts = [..._contacts, isFirst ? c.copyWith(isPrimary: true) : c];
+    _persistContacts();
     notifyListeners();
   }
 
   void removeContact(String id) {
+    final removed = _contacts.firstWhere(
+      (c) => c.id == id,
+      orElse: () => _contacts.first,
+    );
     _contacts = _contacts.where((c) => c.id != id).toList();
+    // Removing the primary promotes the next one rather than leaving none.
+    if (removed.isPrimary && _contacts.isNotEmpty) {
+      _contacts = [
+        _contacts.first.copyWith(isPrimary: true),
+        ..._contacts.skip(1),
+      ];
+    }
+    _persistContacts();
     notifyListeners();
   }
 
@@ -107,17 +182,13 @@ class CheckinProvider extends ChangeNotifier {
     _contacts = [
       for (final c in _contacts) c.copyWith(isPrimary: c.id == id),
     ];
+    _persistContacts();
     notifyListeners();
   }
 
-  /// Demo switch: start with no contacts to show the empty state.
   void clearContacts() {
     _contacts = [];
-    notifyListeners();
-  }
-
-  void restoreContacts() {
-    _contacts = [...MockContacts.all];
+    _persistContacts();
     notifyListeners();
   }
 

@@ -18,6 +18,7 @@ import '../../widgets/reports/report_card.dart';
 import '../checkin/checkin_setup_screen.dart';
 import '../report/report_detail_screen.dart';
 import '../report/report_flow_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Activity: alerts, the user's own reports, and past check-ins.
 class ActivityScreen extends StatelessWidget {
@@ -30,17 +31,17 @@ class ActivityScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: Gap.page(context),
-          title: const Text('Activity'),
+          title: Text(L.of(context).navActivity),
           actions: [
             Consumer<NotificationsProvider>(
               builder: (context, n, _) => n.unreadCount == 0
-                  ? const SizedBox.shrink()
+                  ? SizedBox.shrink()
                   : TextButton(
                       onPressed: () {
                         n.markAllRead();
                         Toast.show(context, 'All alerts marked as read.');
                       },
-                      child: const Text('Mark all read'),
+                      child: Text(L.of(context).markAllRead),
                     ),
             ),
             SizedBox(width: Gap.page(context) - Gap.md),
@@ -49,12 +50,12 @@ class ActivityScreen extends StatelessWidget {
             isScrollable: false,
             indicator: UnderlineTabIndicator(
               borderSide: BorderSide(color: context.scheme.primary, width: 2.5),
-              insets: const EdgeInsets.symmetric(horizontal: Gap.lg),
+              insets: EdgeInsets.symmetric(horizontal: Gap.lg),
             ),
-            tabs: const [
-              Tab(text: 'Alerts'),
-              Tab(text: 'My reports'),
-              Tab(text: 'Check-ins'),
+            tabs: [
+              Tab(text: L.of(context).alerts),
+              Tab(text: L.of(context).myReports),
+              Tab(text: L.of(context).checkIns),
             ],
           ),
         ),
@@ -83,12 +84,10 @@ class _AlertsTab extends StatelessWidget {
     if (notifications.isEmpty) {
       return EmptyState(
         icon: Icons.notifications_none_rounded,
-        title: 'No alerts yet',
+        title: L.of(context).noAlertsYet,
         message:
-            'You will hear from us when a new report lands on a route you use, '
-            'when someone confirms one of your reports, or when a check-in '
-            'needs your attention.',
-        primaryLabel: 'Browse the map',
+            L.of(context).willHearUsWhenNew,
+        primaryLabel: L.of(context).browseMap,
         onPrimary: () => Navigator.of(context).maybePop(),
       );
     }
@@ -208,11 +207,10 @@ class _MyReportsTab extends StatelessWidget {
     if (mine.isEmpty) {
       return EmptyState(
         icon: Icons.campaign_outlined,
-        title: 'You have not reported anything yet',
+        title: L.of(context).reportedAnythingYet,
         message:
-            'The first time you tell other travellers about a blocked lane or a '
-            'broken streetlight, it will show up here.',
-        primaryLabel: 'Make your first report',
+            L.of(context).firstTimeTellOtherTravellers,
+        primaryLabel: L.of(context).makeFirstReport,
         onPrimary: () => Navigator.of(context)
             .push(SlideUpRoute(child: const ReportFlowScreen())),
       );
@@ -228,18 +226,18 @@ class _MyReportsTab extends StatelessWidget {
           tiles: [
             StatTile(
                 value: '${mine.length}',
-                label: 'Total reports',
+                label: L.of(context).totalReports,
                 icon: Icons.campaign_outlined,
               ),
             StatTile(
                 value: '${live.length}',
-                label: 'Live now',
+                label: L.of(context).liveNow,
                 icon: Icons.sensors_rounded,
               ),
             StatTile(
                 value:
                     '${mine.where((r) => r.status == ReportStatus.corroborated).length}',
-                label: 'Confirmed by others',
+                label: L.of(context).confirmedOthers,
                 icon: Icons.verified_outlined,
               ),
           ],
@@ -247,9 +245,9 @@ class _MyReportsTab extends StatelessWidget {
 
         if (live.isNotEmpty) ...[
           const SizedBox(height: Gap.xxl),
-          const SectionHeader(
-            title: 'Live',
-            subtitle: 'Still affecting route awareness',
+          SectionHeader(
+            title: L.of(context).live2,
+            subtitle: L.of(context).stillAffectingRouteAwareness,
             padding: EdgeInsets.only(bottom: Gap.md),
           ),
           for (var i = 0; i < live.length; i++)
@@ -270,9 +268,9 @@ class _MyReportsTab extends StatelessWidget {
 
         if (past.isNotEmpty) ...[
           const SizedBox(height: Gap.xxl),
-          const SectionHeader(
-            title: 'Expired and withheld',
-            subtitle: 'No longer affecting routes',
+          SectionHeader(
+            title: L.of(context).expiredWithheld,
+            subtitle: L.of(context).noLongerAffectingRoutes,
             padding: EdgeInsets.only(bottom: Gap.md),
           ),
           for (final r in past)
@@ -306,11 +304,10 @@ class _CheckinsTab extends StatelessWidget {
     if (history.isEmpty && checkin.active == null) {
       return EmptyState(
         icon: Icons.timer_outlined,
-        title: 'No check-ins yet',
+        title: L.of(context).noCheckInsYet,
         message:
-            'A check-in is a timer you share with someone you trust. If you do '
-            'not confirm you arrived, they know to look for you.',
-        primaryLabel: 'Start a check-in',
+            L.of(context).checkTimerShareSomeoneTrust,
+        primaryLabel: L.of(context).startCheck,
         onPrimary: () => Navigator.of(context)
             .push(SlideUpRoute(child: const CheckinSetupScreen())),
       );
@@ -320,8 +317,8 @@ class _CheckinsTab extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, 120),
       children: [
         if (checkin.active != null) ...[
-          const SectionHeader(
-            title: 'Running now',
+          SectionHeader(
+            title: L.of(context).runningNow,
             padding: EdgeInsets.only(bottom: Gap.md),
           ),
           SafarCard(
@@ -350,7 +347,7 @@ class _CheckinsTab extends StatelessWidget {
                   onPressed: () => Navigator.of(context).push(
                     SlideUpRoute(child: const CheckinSetupScreen()),
                   ),
-                  child: const Text('Open'),
+                  child: Text(L.of(context).open),
                 ),
               ],
             ),
@@ -359,8 +356,8 @@ class _CheckinsTab extends StatelessWidget {
         ],
 
         if (history.isNotEmpty) ...[
-          const SectionHeader(
-            title: 'Past check-ins',
+          SectionHeader(
+            title: L.of(context).pastCheckIns,
             padding: EdgeInsets.only(bottom: Gap.md),
           ),
           for (final c in history)
