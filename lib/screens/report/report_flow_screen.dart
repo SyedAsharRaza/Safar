@@ -17,7 +17,7 @@ import '../../widgets/common/feedback.dart';
 import '../../widgets/common/inputs.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
-import '../../widgets/map/mock_map.dart';
+import '../../widgets/map/safar_map.dart';
 import 'report_review_screen.dart';
 
 enum _Step { category, issue, location, describe }
@@ -561,7 +561,7 @@ class _LocationStep extends StatelessWidget {
                   child: Stack(
                     children: [
                       Positioned.fill(
-                        child: MockMap(
+                        child: SafarMap(
                           bounds: BwpGeo.bounds,
                           droppedPin: mode == LocationMode.approximate
                               ? location.blurred()

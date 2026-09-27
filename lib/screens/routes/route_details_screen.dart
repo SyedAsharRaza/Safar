@@ -19,6 +19,7 @@ import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/map_painter.dart';
 import '../../widgets/map/map_projection.dart';
 import '../../widgets/map/mock_map.dart';
+import '../../widgets/map/safar_map.dart';
 import '../../widgets/reports/report_card.dart';
 import '../../widgets/routes/awareness_breakdown.dart';
 import '../../widgets/routes/route_card.dart';
@@ -100,7 +101,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
               SizedBox(width: gutter - Gap.sm),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: MockMap(
+              background: SafarMap(
                 bounds: boundsFor(route.polyline),
                 animateRoute: true,
                 routeLines: [
@@ -113,6 +114,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                 segmentTints: tintsForReports(route.reports),
                 reports: route.reports,
                 selectedReportId: _selectedReportId,
+                showBadge: true,
                 origin: routes.origin?.location,
                 destination: routes.destination?.location,
                 onReportTap: (r) => setState(() => _selectedReportId = r.id),

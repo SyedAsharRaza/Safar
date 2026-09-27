@@ -7,6 +7,7 @@ import 'package:bahawalpur_safar/state/notifications_provider.dart';
 import 'package:bahawalpur_safar/state/places_provider.dart';
 import 'package:bahawalpur_safar/state/reports_provider.dart';
 import 'package:bahawalpur_safar/state/routes_provider.dart';
+import 'package:bahawalpur_safar/widgets/map/safar_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +18,8 @@ import 'package:provider/provider.dart';
 const Size kPhone = Size(412, 915);
 
 /// The map's location dot and the skeleton shimmer repeat forever by design, so
-/// `pumpAndSettle` would never return. Pump a fixed number of frames instead —
-/// long enough for entrance animations and mock latency to finish.
+/// `pumpAndSettle` would never return. Pump a fixed number of frames instead,
+/// long enough for entrance animations and the mock service latency to finish.
 Future<void> settle(
   WidgetTester tester, {
   Duration total = const Duration(seconds: 3),
@@ -27,6 +28,41 @@ Future<void> settle(
   for (var elapsed = Duration.zero; elapsed < total; elapsed += step) {
     await tester.pump(step);
   }
+}
+
+/// Finds a label, dragging the viewport upward until it appears. On a phone
+/// viewport much of each screen starts below the fold, and an unbuilt widget
+/// cannot be found by any finder.
+Future<Finder> _reveal(
+  WidgetTester tester,
+  Finder Function() make, {
+  int maxDrags = 14,
+}) async {
+  for (var attempt = 0; attempt <= maxDrags; attempt++) {
+    final finder = make();
+    if (finder.evaluate().isNotEmpty) return finder;
+    // Drag from the middle of the screen so whatever list is under the finger
+    // scrolls, without having to guess which Scrollable is the right one.
+    await tester.dragFrom(const Offset(206, 520), const Offset(0, -260));
+    await settle(tester, total: const Duration(milliseconds: 260));
+  }
+  return make();
+}
+
+/// Scrolls [label] into view and taps it.
+Future<void> tapText(WidgetTester tester, String label) async {
+  final finder = await _reveal(tester, () => find.text(label));
+  expect(finder, findsWidgets, reason: 'Could not reach "$label"');
+  await tester.ensureVisible(finder.first);
+  await settle(tester, total: const Duration(milliseconds: 260));
+  await tester.tap(finder.first, warnIfMissed: false);
+  await settle(tester);
+}
+
+/// Asserts a label appears, scrolling to look for it.
+Future<void> expectTextEventually(WidgetTester tester, String label) async {
+  final finder = await _reveal(tester, () => find.textContaining(label));
+  expect(finder, findsWidgets, reason: 'Never saw "$label"');
 }
 
 Future<void> _usePhoneSurface(WidgetTester tester) async {
@@ -55,7 +91,11 @@ Future<ReportsProvider> pumpShell(
   await tester.pumpWidget(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppState()..completeOnboarding()),
+        ChangeNotifierProvider(
+          create: (_) => AppState()
+            ..completeOnboarding()
+            ..setMapMode(MapMode.designed),
+        ),
         ChangeNotifierProvider<ReportsProvider>.value(value: reports),
         ChangeNotifierProvider(create: (_) => RoutesProvider()),
         ChangeNotifierProvider(create: (_) => CheckinProvider()),
@@ -82,8 +122,9 @@ void main() {
     expect(find.text('Compare routes'), findsOneWidget);
     expect(find.text('FROM'), findsOneWidget);
     expect(find.text('TO'), findsOneWidget);
+
     // Seeded data must always be labelled as demonstration data.
-    expect(find.textContaining('Demo data'), findsWidgets);
+    await expectTextEventually(tester, 'Demo data');
   });
 
   testWidgets('every bottom-nav destination opens without error', (
@@ -115,20 +156,17 @@ void main() {
     await settle(tester);
 
     // Step 1: category.
-    await tester.tap(find.text('Blockage'));
-    await settle(tester);
+    await tapText(tester, 'Blockage');
     expect(find.text('What exactly is happening?'), findsOneWidget);
     expect(find.text('Step 2 of 4'), findsOneWidget);
 
     // Step 2: specific issue.
-    await tester.tap(find.text('Street blocked'));
-    await settle(tester);
+    await tapText(tester, 'Street blocked');
     expect(find.text('Where is it?'), findsOneWidget);
     expect(find.text('Step 3 of 4'), findsOneWidget);
 
     // Step 3: location.
-    await tester.tap(find.text('Continue'));
-    await settle(tester);
+    await tapText(tester, 'Continue');
     expect(find.text('Anything to add?'), findsOneWidget);
     expect(find.text('Step 4 of 4'), findsOneWidget);
     expect(find.text('Review my report'), findsOneWidget);
@@ -140,28 +178,23 @@ void main() {
 
     await tester.tap(find.byTooltip('Report a road condition'));
     await settle(tester);
-    await tester.tap(find.text('Blockage'));
-    await settle(tester);
-    await tester.tap(find.text('Street blocked'));
-    await settle(tester);
-    await tester.tap(find.text('Continue'));
-    await settle(tester);
+    await tapText(tester, 'Blockage');
+    await tapText(tester, 'Street blocked');
+    await tapText(tester, 'Continue');
 
     await tester.enterText(
       find.byType(TextField).first,
       'Aagay gali band hai',
     );
     await settle(tester);
-    await tester.tap(find.text('Review my report'));
-    await settle(tester);
+    await tapText(tester, 'Review my report');
 
     // The review screen states its reading before anything is published.
     expect(find.text('We understood this as'), findsOneWidget);
     expect(find.text('Street blocked'), findsWidgets);
     expect(find.text('Confirm and publish'), findsOneWidget);
 
-    await tester.tap(find.text('Confirm and publish'));
-    await settle(tester);
+    await tapText(tester, 'Confirm and publish');
 
     expect(find.text('Your report is live'), findsOneWidget);
     expect(reports.mine.length, before + 1);
@@ -174,20 +207,16 @@ void main() {
 
     await tester.tap(find.byTooltip('Report a road condition'));
     await settle(tester);
-    await tester.tap(find.text('Safety concern'));
-    await settle(tester);
-    await tester.tap(find.text('Suspicious activity'));
-    await settle(tester);
-    await tester.tap(find.text('Continue'));
-    await settle(tester);
+    await tapText(tester, 'Safety concern');
+    await tapText(tester, 'Suspicious activity');
+    await tapText(tester, 'Continue');
 
     await tester.enterText(
       find.byType(TextField).first,
       'Uska naam Ali hai aur uska phone number bhi mujhe pata hai',
     );
     await settle(tester);
-    await tester.tap(find.text('Review my report'));
-    await settle(tester);
+    await tapText(tester, 'Review my report');
 
     expect(find.text('This report cannot be published'), findsOneWidget);
     expect(find.text('Confirm and publish'), findsNothing);
@@ -210,8 +239,7 @@ void main() {
       ..setDestination(MockPlaces.byId('pl_iub'));
     await settle(tester);
 
-    await tester.tap(find.text('Compare routes'));
-    await settle(tester);
+    await tapText(tester, 'Compare routes');
     await routes.plan(reports: reports.live);
     await settle(tester);
 
@@ -226,11 +254,8 @@ void main() {
   ) async {
     await pumpShell(tester, withReports: false);
 
-    expect(find.text('No live reports right now'), findsOneWidget);
-    expect(
-      find.textContaining('not the same as "all clear"'),
-      findsOneWidget,
-    );
+    await expectTextEventually(tester, 'No live reports right now');
+    await expectTextEventually(tester, 'not the same as "all clear"');
   });
 
   testWidgets('activity tab shows alerts, reports and check-ins', (
@@ -242,12 +267,10 @@ void main() {
     expect(find.text('My reports'), findsOneWidget);
     expect(find.text('Check-ins'), findsOneWidget);
 
-    await tester.tap(find.text('My reports'));
-    await settle(tester);
+    await tapText(tester, 'My reports');
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('Check-ins'));
-    await settle(tester);
+    await tapText(tester, 'Check-ins');
     expect(tester.takeException(), isNull);
   });
 
@@ -258,13 +281,9 @@ void main() {
     expect(find.text('Saved places'), findsOneWidget);
     expect(find.text('Trusted contacts'), findsOneWidget);
 
-    await tester.tap(find.text('About Bahawalpur Safar'));
-    await settle(tester);
-    expect(find.text('What Bahawalpur Safar is not'), findsOneWidget);
-    expect(
-      find.textContaining('does not guarantee safety'),
-      findsWidgets,
-    );
+    await tapText(tester, 'About Bahawalpur Safar');
+    await expectTextEventually(tester, 'What Bahawalpur Safar is not');
+    await expectTextEventually(tester, 'does not guarantee safety');
   });
 
   testWidgets('dark theme renders every tab without overflow', (tester) async {
@@ -274,7 +293,9 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(
-            create: (_) => AppState()..completeOnboarding(),
+            create: (_) => AppState()
+              ..completeOnboarding()
+              ..setMapMode(MapMode.designed),
           ),
           ChangeNotifierProvider<ReportsProvider>.value(value: reports),
           ChangeNotifierProvider(create: (_) => RoutesProvider()),

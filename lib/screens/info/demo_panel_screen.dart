@@ -13,6 +13,7 @@ import '../../state/routes_provider.dart';
 import '../../widgets/common/feedback.dart';
 import '../../widgets/common/inputs.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../widgets/map/safar_map.dart';
 
 /// Presenter's control panel.
 ///
@@ -134,6 +135,30 @@ class DemoPanelScreen extends StatelessWidget {
                 onSwitch: reports.setIncludeExpired,
               ),
             ],
+          ),
+
+          // --- Map surface ----------------------------------------------------
+          const SizedBox(height: Gap.xl),
+          Text(
+            'Map surface',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: Gap.sm),
+          SegmentedSelector<MapMode>(
+            values: MapMode.values,
+            selected: app.mapMode,
+            labelOf: (m) => m.label,
+            onChanged: (m) {
+              app.setMapMode(m);
+              Toast.show(context, 'Map surface: ${m.label}');
+            },
+          ),
+          const SizedBox(height: Gap.sm),
+          Text(
+            app.mapMode.detail,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: context.tokens.textSecondary,
+                ),
           ),
 
           // --- Failure simulation -------------------------------------------------

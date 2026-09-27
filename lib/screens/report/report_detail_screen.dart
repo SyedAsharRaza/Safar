@@ -16,7 +16,7 @@ import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/map_painter.dart';
 import '../../widgets/map/map_projection.dart';
-import '../../widgets/map/mock_map.dart';
+import '../../widgets/map/safar_map.dart';
 
 /// One community signal in full, with confirm / dispute / withdraw actions.
 class ReportDetailScreen extends StatefulWidget {
@@ -131,7 +131,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
             backgroundColor: context.scheme.surface,
             surfaceTintColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: MockMap(
+              background: SafarMap(
                 bounds: boundsFor(
                   [report.location, ...part.segment.path],
                   marginFactor: 0.5,
@@ -146,6 +146,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   ),
                 ],
                 interactive: false,
+                preferDesigned: true,
               ),
             ),
           ),

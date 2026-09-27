@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/taxonomy.dart';
 import '../models/user_profile.dart';
 import '../data/mock/mock_misc.dart';
+import '../widgets/map/safar_map.dart';
 
 /// Which "demo persona" the app is in. Lets a presenter show the first-run
 /// experience and the returning-user experience without reinstalling.
@@ -29,6 +30,7 @@ class AppState extends ChangeNotifier {
   bool _onboarded = false;
   bool _signedIn = false;
   DemoPersona _persona = DemoPersona.returning;
+  MapMode _mapMode = MapMode.auto;
   UserProfile _profile = MockUser.profile();
 
   /// Forces the next AI classification to fail, for demoing the fallback.
@@ -44,6 +46,7 @@ class AppState extends ChangeNotifier {
   bool get onboarded => _onboarded;
   bool get signedIn => _signedIn;
   DemoPersona get persona => _persona;
+  MapMode get mapMode => _mapMode;
   UserProfile get profile => _profile;
   bool get simulateAiFailure => _simulateAiFailure;
 
@@ -76,6 +79,11 @@ class AppState extends ChangeNotifier {
 
   void toggleShowExpired(bool v) {
     _showExpiredReports = v;
+    notifyListeners();
+  }
+
+  void setMapMode(MapMode m) {
+    _mapMode = m;
     notifyListeners();
   }
 

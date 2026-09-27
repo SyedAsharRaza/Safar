@@ -15,6 +15,7 @@ import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/map_painter.dart';
 import '../../widgets/map/map_projection.dart';
 import '../../widgets/map/mock_map.dart';
+import '../../widgets/map/safar_map.dart';
 import '../../widgets/routes/route_card.dart';
 import '../report/report_detail_screen.dart';
 import '../report/report_flow_screen.dart';
@@ -29,7 +30,7 @@ class RouteResultsScreen extends StatefulWidget {
 }
 
 class _RouteResultsScreenState extends State<RouteResultsScreen> {
-  final GlobalKey<MockMapState> _mapKey = GlobalKey<MockMapState>();
+  final GlobalKey<SafarMapState> _mapKey = GlobalKey<SafarMapState>();
   String? _selectedReportId;
 
   Future<void> _retry() async {
@@ -65,7 +66,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
         children: [
           // --- Map -----------------------------------------------------------
           Positioned.fill(
-            child: MockMap(
+            child: SafarMap(
               key: _mapKey,
               bounds: bounds,
               animateRoute: true,
@@ -87,6 +88,8 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
               destination: destination?.location,
               originLabel: origin?.name,
               destinationLabel: destination?.name,
+              showBadge: true,
+              obscuredBottom: MediaQuery.sizeOf(context).height * 0.52,
               onReportTap: (r) {
                 setState(() => _selectedReportId = r.id);
                 _showReportPreview(r.id);
@@ -105,16 +108,6 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
             },
             onRecentre: () => _mapKey.currentState?.recentre(),
           ),
-
-          // --- Legend --------------------------------------------------------
-          if (routes.options.isNotEmpty)
-            Positioned(
-              right: Gap.page(context),
-              top: MediaQuery.paddingOf(context).top + 104,
-              child: RouteLegend(
-                flavours: routes.options.map((r) => r.flavour).toList(),
-              ),
-            ),
 
           if (app.offline)
             Positioned(
@@ -505,6 +498,10 @@ class _ReadyList extends StatelessWidget {
                     Text(
                       'Route awareness, never a safety score.',
                       style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: Gap.md),
+                    RouteLegend(
+                      flavours: options.map((r) => r.flavour).toList(),
                     ),
                   ],
                 ),

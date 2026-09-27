@@ -14,6 +14,7 @@ import '../../widgets/common/feedback.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/mock_map.dart';
+import '../../widgets/map/safar_map.dart';
 import '../../widgets/reports/report_card.dart';
 import '../report/report_detail_screen.dart';
 import '../report/report_flow_screen.dart';
@@ -28,7 +29,7 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  final GlobalKey<MockMapState> _mapKey = GlobalKey<MockMapState>();
+  final GlobalKey<SafarMapState> _mapKey = GlobalKey<SafarMapState>();
   String? _selectedId;
 
   @override
@@ -41,13 +42,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: MockMap(
+            child: SafarMap(
               key: _mapKey,
               bounds: BwpGeo.bounds,
               reports: visible,
               segmentTints: tintsForReports(visible),
               selectedReportId: _selectedId,
               userLocation: BwpGeo.fawaraChowk,
+              showBadge: true,
+              obscuredBottom: MediaQuery.sizeOf(context).height * 0.34,
               onReportTap: (r) => setState(() => _selectedId = r.id),
             ),
           ),

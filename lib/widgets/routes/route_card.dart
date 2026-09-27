@@ -283,6 +283,9 @@ class RouteCard extends StatelessWidget {
 }
 
 /// Map legend for the route comparison screen.
+///
+/// Lives inside the results sheet rather than floating over the map: anywhere
+/// it floats it eventually covers a marker or a control.
 class RouteLegend extends StatelessWidget {
   const RouteLegend({super.key, required this.flavours});
 
@@ -290,49 +293,32 @@ class RouteLegend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Gap.md,
-        vertical: Gap.sm,
-      ),
-      decoration: BoxDecoration(
-        color: context.scheme.surface.withValues(alpha: 0.94),
-        borderRadius: Radii.allSm,
-        border: Border.all(color: context.tokens.border),
-        boxShadow: context.tokens.cardShadow,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final f in flavours)
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: f == flavours.last ? 0 : Gap.xs + 1,
+    return Wrap(
+      spacing: Gap.md,
+      runSpacing: Gap.sm - 2,
+      children: [
+        for (final f in flavours)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 16,
+                height: 3.5,
+                decoration: BoxDecoration(
+                  color: routeColourFor(f),
+                  borderRadius: Radii.pill,
+                ),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 14,
-                    height: 3.5,
-                    decoration: BoxDecoration(
-                      color: routeColourFor(f),
-                      borderRadius: Radii.pill,
+              const SizedBox(width: Gap.sm - 2),
+              Text(
+                f.label,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: context.tokens.textSecondary,
                     ),
-                  ),
-                  const SizedBox(width: Gap.sm),
-                  Text(
-                    f.label,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: context.tokens.textSecondary,
-                          fontSize: 10.5,
-                        ),
-                  ),
-                ],
               ),
-            ),
-        ],
-      ),
+            ],
+          ),
+      ],
     );
   }
 }

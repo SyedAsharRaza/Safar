@@ -14,6 +14,7 @@ import '../../state/reports_provider.dart';
 import '../../widgets/common/feedback.dart';
 import '../../widgets/common/inputs.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../widgets/map/safar_map.dart';
 import '../checkin/contacts_screen.dart';
 import '../info/about_screen.dart';
 import '../info/demo_panel_screen.dart';
@@ -123,6 +124,21 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.history_rounded,
                 switchValue: reports.includeExpired,
                 onSwitch: reports.setIncludeExpired,
+              ),
+              SettingRow(
+                title: 'Map surface',
+                subtitle: app.mapMode.detail,
+                value: app.mapMode.label,
+                icon: Icons.map_outlined,
+                onTap: () => _pick<MapMode>(
+                  context,
+                  title: 'Map surface',
+                  values: MapMode.values,
+                  selected: app.mapMode,
+                  labelOf: (m) => m.label,
+                  subtitleOf: (m) => m.detail,
+                  onPick: app.setMapMode,
+                ),
               ),
               SettingRow(
                 title: 'Appearance',

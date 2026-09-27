@@ -22,6 +22,7 @@ import '../../widgets/common/inputs.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/mock_map.dart';
+import '../../widgets/map/safar_map.dart';
 import '../../widgets/reports/report_card.dart';
 import '../checkin/checkin_active_screen.dart';
 import '../checkin/checkin_setup_screen.dart';
@@ -476,7 +477,7 @@ class _AreaSnapshot extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: MockMap(
+                    child: SafarMap(
                       bounds: BwpGeo.bounds,
                       reports: reports.live,
                       segmentTints: tintsForReports(reports.live),
@@ -485,6 +486,7 @@ class _AreaSnapshot extends StatelessWidget {
                       compactMarkers: true,
                       showLabels: false,
                       detail: 0.8,
+                      preferDesigned: true,
                     ),
                   ),
                   Positioned(

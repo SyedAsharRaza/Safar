@@ -1,3 +1,15 @@
+import java.util.Properties
+
+// The Maps key lives in android/local.properties, which is gitignored, so it
+// never lands in source control. It still ships inside the APK — that is
+// unavoidable for the Android Maps SDK — so the key must also be restricted to
+// this app's package name and signing SHA-1 in the Google Cloud console.
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val mapsApiKey: String = localProps.getProperty("MAPS_API_KEY") ?: ""
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -27,6 +39,9 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Injected into AndroidManifest.xml as ${'$'}{MAPS_API_KEY}.
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
