@@ -34,6 +34,7 @@ import '../report/report_flow_screen.dart';
 import '../routes/route_results_screen.dart';
 import '../search/place_picker_screen.dart';
 import 'app_shell.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Home: plan a trip, see what is happening nearby, start a check-in.
 class HomeScreen extends StatefulWidget {
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.fromLTRB(gutter, Gap.xxl, gutter, Gap.md),
                 child: SectionHeader(
                   eyebrow: 'Happening now',
-                  title: 'Recent community signals',
+                  title: L.of(context).recentSignals,
                   subtitle: reports.state == LoadState.ready
                       ? '${reports.live.length} live in the demo area'
                       : null,
@@ -200,10 +201,10 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(gutter, Gap.xxl, gutter, 0),
-                child: const InfoPanel(
+                child: InfoPanel(
                   text: AppText.disclaimer,
                   icon: Icons.shield_outlined,
-                  title: 'Before you rely on this',
+                  title: L.of(context).beforeYouRely,
                 ),
               ),
             ),
@@ -336,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: EmptyState(
               compact: true,
               icon: Icons.sentiment_satisfied_outlined,
-              title: 'No live reports right now',
+              title: L.of(context).noLiveReports,
               message:
                   'Nothing has been reported in the demo area recently. That is '
                   'not the same as "all clear" — it means we have no data.',
@@ -440,7 +441,7 @@ class _TripPlanner extends StatelessWidget {
           FilledButton.icon(
             onPressed: onCompare,
             icon: const Icon(Icons.alt_route_rounded, size: 19),
-            label: const Text('Compare routes'),
+            label: Text(L.of(context).compareRoutes),
             style: FilledButton.styleFrom(
               minimumSize: const Size(double.infinity, 52),
             ),
@@ -492,14 +493,19 @@ class _AreaSnapshot extends StatelessWidget {
       child: Column(
         children: [
           // --- Mini map ---------------------------------------------------------
-          ClipRRect(
+          // The whole preview is the affordance, not just the chip: tapping
+          // anywhere on it opens the full map, which is what people try first.
+          GestureDetector(
+            onTap: () => ShellNav.maybeOf(context)?.goToTab(1),
+            child: ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radii.lg),
             child: SizedBox(
               height: 152,
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: SafarMap(
+                    child: IgnorePointer(
+                      child: SafarMap(
                       bounds: BwpGeo.bounds,
                       reports: reports.live,
                       segmentTints: tintsForReports(reports.live),
@@ -509,6 +515,7 @@ class _AreaSnapshot extends StatelessWidget {
                       showLabels: false,
                       detail: 0.8,
                       preferDesigned: true,
+                    ),
                     ),
                   ),
                   Positioned(
@@ -520,15 +527,17 @@ class _AreaSnapshot extends StatelessWidget {
                     right: Gap.md,
                     bottom: Gap.md,
                     child: Pill(
-                      label: 'Open map',
+                      label: L.of(context).openMap,
                       icon: Icons.open_in_full_rounded,
                       color: context.tokens.textPrimary,
                       background: context.scheme.surface,
                       dense: true,
+                      onTap: () => ShellNav.maybeOf(context)?.goToTab(1),
                     ),
                   ),
                 ],
               ),
+            ),
             ),
           ),
 
@@ -545,33 +554,25 @@ class _AreaSnapshot extends StatelessWidget {
                   style: t.bodySmall?.copyWith(height: 1.45),
                 ),
                 const SizedBox(height: Gap.md),
-                Row(
-                  children: [
-                    Expanded(
-                      child: StatTile(
+                StatTileRow(
+                  tiles: [
+                    StatTile(
                         value: '${reports.live.length}',
-                        label: 'Live signals',
+                        label: L.of(context).liveSignals,
                         icon: Icons.campaign_outlined,
                       ),
-                    ),
-                    const SizedBox(width: Gap.sm),
-                    Expanded(
-                      child: StatTile(
+                    StatTile(
                         value: '${reports.freshCount}',
-                        label: 'In the last hour',
+                        label: L.of(context).inLastHour,
                         icon: Icons.schedule_rounded,
                         tone: AppColors.accentDeep,
                       ),
-                    ),
-                    const SizedBox(width: Gap.sm),
-                    Expanded(
-                      child: StatTile(
+                    StatTile(
                         value: '${blocked.length}',
-                        label: 'Roads reported blocked',
+                        label: L.of(context).roadsBlocked,
                         icon: Icons.block_outlined,
                         tone: AppColors.danger,
                       ),
-                    ),
                   ],
                 ),
               ],
@@ -642,8 +643,8 @@ class _QuickActions extends StatelessWidget {
         Expanded(
           child: _ActionTile(
             icon: Icons.travel_explore_rounded,
-            title: 'Browse the map',
-            subtitle: 'See every signal nearby',
+            title: L.of(context).browseMap,
+            subtitle: L.of(context).seeEverySignal,
             tone: AppColors.brand,
             onTap: () => ShellNav.maybeOf(context)?.goToTab(1),
           ),

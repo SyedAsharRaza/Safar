@@ -278,7 +278,7 @@ class MockAiClassifier {
         needsConfirmation: true,
         doNotPublish: true,
         withheldReason:
-            'This report names or identifies a person. Bahawalpur Safar does not '
+            'This report names or identifies a person. Safar does not '
             'publish reports about identifiable individuals.',
       );
     }

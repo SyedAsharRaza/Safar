@@ -1,0 +1,2 @@
+# One tester email per line. They receive an install link by email.
+# Add your teammates and the judges here.

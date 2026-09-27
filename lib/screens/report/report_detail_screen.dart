@@ -19,6 +19,7 @@ import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/map_painter.dart';
 import '../../widgets/map/map_projection.dart';
 import '../../widgets/map/safar_map.dart';
+import '../../l10n/app_localizations.dart';
 
 /// One community signal in full, with confirm / dispute / withdraw actions.
 class ReportDetailScreen extends StatefulWidget {
@@ -281,34 +282,26 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   const SizedBox(height: Gap.lg),
 
                   // --- Facts grid -------------------------------------------------
-                  Row(
-                    children: [
-                      Expanded(
-                        child: StatTile(
+                  StatTileRow(
+                    tiles: [
+                      StatTile(
                           value: report.severity.label,
                           label: 'Severity',
                           icon: Icons.speed_rounded,
                           tone: report.severity.color,
                         ),
-                      ),
-                      const SizedBox(width: Gap.sm),
-                      Expanded(
-                        child: StatTile(
+                      StatTile(
                           value: '${report.confirmationCount}',
                           label: 'Confirmations',
                           icon: Icons.how_to_reg_outlined,
                           tone: AppColors.awarenessLow,
                         ),
-                      ),
-                      const SizedBox(width: Gap.sm),
-                      Expanded(
-                        child: StatTile(
+                      StatTile(
                           value: '${report.disputeCount}',
                           label: 'Disputes',
                           icon: Icons.thumb_down_outlined,
                           tone: AppColors.awarenessElevated,
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: Gap.md),
@@ -436,7 +429,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         note: 'Expired reports no longer affect routes.',
         primary: OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Back'),
+          child: Text(L.of(context).back),
         ),
       );
     }

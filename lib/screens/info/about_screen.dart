@@ -81,7 +81,7 @@ class AboutScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'What Bahawalpur Safar is not',
+                  'What Safar is not',
                   style: t.titleMedium?.copyWith(color: context.scheme.error),
                 ),
                 const SizedBox(height: Gap.md),

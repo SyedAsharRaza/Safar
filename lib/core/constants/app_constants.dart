@@ -1,7 +1,7 @@
 /// Product-level copy and constants. Centralised because the disclaimer and the
 /// "demonstration data" labelling must read identically everywhere they appear.
 abstract final class AppText {
-  static const String appName = 'Bahawalpur Safar';
+  static const String appName = 'Safar';
   static const String tagline = 'Know the road before you take it.';
   static const String taglineRoman = 'Rasta lene se pehle jaan lein.';
 
@@ -22,7 +22,7 @@ abstract final class AppText {
       'of Bahawalpur. They are not live or official data.';
 
   static const String notEmergency =
-      'Bahawalpur Safar is not an emergency service. For emergencies contact '
+      'Safar is not an emergency service. For emergencies contact '
       'Rescue 1122 or Police 15 directly.';
 
   static const String privacyPromise =
@@ -34,9 +34,12 @@ abstract final class AppText {
       'lighting and activity. Newer reports count more, and reports fade over '
       'time. It is never a safety score or a percentage.';
 
+  /// Shown on the splash. The app falls back to seeded data when the API is
+  /// unreachable, so this must not promise a live connection either way — the
+  /// home screen states which one is actually in use.
   static const String uiOnlyBuildNote =
-      'UI prototype build. Reports, routes, and AI classification run on local '
-      'demonstration data — no backend is connected.';
+      'Prototype build. Community signals come from the Safar API, with '
+      'clearly-labelled demonstration data when it is unreachable.';
 }
 
 abstract final class AppLimits {

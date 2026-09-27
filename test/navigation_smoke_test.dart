@@ -9,6 +9,8 @@ import 'package:bahawalpur_safar/state/reports_provider.dart';
 import 'package:bahawalpur_safar/state/routes_provider.dart';
 import 'package:bahawalpur_safar/widgets/map/safar_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:bahawalpur_safar/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
@@ -104,6 +106,13 @@ Future<ReportsProvider> pumpShell(
       ],
       child: MaterialApp(
         theme: AppTheme.light(),
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L.supportedLocales,
         home: AppShell(initialIndex: initialIndex),
       ),
     ),
@@ -307,6 +316,13 @@ void main() {
           theme: AppTheme.dark(),
           darkTheme: AppTheme.dark(),
           themeMode: ThemeMode.dark,
+          localizationsDelegates: const [
+            L.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L.supportedLocales,
           home: const AppShell(),
         ),
       ),

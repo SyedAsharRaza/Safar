@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
+import 'l10n/app_localizations.dart';
 import 'data/push/push_service.dart';
 import 'core/theme/app_theme.dart';
 import 'screens/onboarding/splash_screen.dart';
@@ -66,6 +68,14 @@ class BahawalpurSafarApp extends StatelessWidget {
         builder: (context, app, _) => MaterialApp(
           title: AppText.appName,
           debugShowCheckedModeBanner: false,
+          locale: app.locale,
+          supportedLocales: L.supportedLocales,
+          localizationsDelegates: const [
+            L.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           themeMode: app.themeMode,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -79,7 +89,17 @@ class BahawalpurSafarApp extends StatelessWidget {
               data: MediaQuery.of(context).copyWith(
                 textScaler: TextScaler.linear(scale.clamp(0.85, 1.3)),
               ),
-              child: child ?? const SizedBox.shrink(),
+              // Flutter decides direction from the language code alone, which
+              // is wrong twice here: it treats `pa` as left-to-right (correct
+              // for Gurmukhi in India, not for the Shahmukhi script used in
+              // Pakistan) and `ur_Latn` as right-to-left (Roman Urdu is Latin
+              // script). The app knows better than the heuristic, so it says so.
+              child: Directionality(
+                textDirection: app.language.isRtl
+                    ? TextDirection.rtl
+                    : TextDirection.ltr,
+                child: child ?? const SizedBox.shrink(),
+              ),
             );
           },
         ),

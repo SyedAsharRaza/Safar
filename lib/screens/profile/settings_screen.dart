@@ -19,6 +19,7 @@ import '../checkin/contacts_screen.dart';
 import '../info/about_screen.dart';
 import '../info/demo_panel_screen.dart';
 import '../info/help_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -31,7 +32,7 @@ class SettingsScreen extends StatelessWidget {
     final gutter = Gap.page(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(L.of(context).settings)),
       body: ListView(
         padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, Gap.x4l),
         children: [
@@ -40,18 +41,14 @@ class SettingsScreen extends StatelessWidget {
             title: 'Language and voice',
             children: [
               SettingRow(
-                title: 'App language',
+                title: L.of(context).appLanguage,
                 subtitle: 'Warnings, prompts and summaries',
                 value: app.language.nativeLabel,
                 icon: Icons.translate_rounded,
                 onTap: () => _pick<ReportLanguage>(
                   context,
-                  title: 'App language',
-                  values: const [
-                    ReportLanguage.english,
-                    ReportLanguage.romanUrdu,
-                    ReportLanguage.urdu,
-                  ],
+                  title: L.of(context).appLanguage,
+                  values: ReportLanguage.selectable,
                   selected: app.language,
                   labelOf: (l) => l.nativeLabel,
                   subtitleOf: (l) => l.label,
@@ -59,7 +56,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               SettingRow(
-                title: 'Voice warnings',
+                title: L.of(context).voiceWarnings,
                 subtitle: 'Play a short spoken warning before you set off',
                 icon: Icons.volume_up_outlined,
                 switchValue: app.voiceWarnings,
@@ -71,10 +68,10 @@ class SettingsScreen extends StatelessWidget {
           // --- Privacy ----------------------------------------------------------------
           const SizedBox(height: Gap.lg),
           SettingGroup(
-            title: 'Privacy',
+            title: L.of(context).privacy,
             children: [
               SettingRow(
-                title: 'Report anonymously',
+                title: L.of(context).reportAnonymously,
                 subtitle: 'Your reports never carry a name',
                 icon: Icons.visibility_off_outlined,
                 tone: AppColors.teal,
@@ -92,7 +89,7 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
               SettingRow(
-                title: 'Blur sensitive locations',
+                title: L.of(context).blurSensitive,
                 subtitle:
                     'Round safety-concern reports to roughly a 250 m area',
                 icon: Icons.blur_on_rounded,
@@ -101,7 +98,7 @@ class SettingsScreen extends StatelessWidget {
                 onSwitch: app.toggleApproximateSensitive,
               ),
               SettingRow(
-                title: 'Trusted contacts',
+                title: L.of(context).trustedContacts,
                 subtitle: checkin.contacts.isEmpty
                     ? 'None added'
                     : '${checkin.contacts.length} stored on this device',
@@ -126,13 +123,13 @@ class SettingsScreen extends StatelessWidget {
                 onSwitch: reports.setIncludeExpired,
               ),
               SettingRow(
-                title: 'Map surface',
+                title: L.of(context).mapSurface,
                 subtitle: app.mapMode.detail,
                 value: app.mapMode.label,
                 icon: Icons.map_outlined,
                 onTap: () => _pick<MapMode>(
                   context,
-                  title: 'Map surface',
+                  title: L.of(context).mapSurface,
                   values: MapMode.values,
                   selected: app.mapMode,
                   labelOf: (m) => m.label,
@@ -141,7 +138,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               SettingRow(
-                title: 'Appearance',
+                title: L.of(context).appearance,
                 value: switch (app.themeMode) {
                   ThemeMode.light => 'Light',
                   ThemeMode.dark => 'Dark',
@@ -150,7 +147,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.dark_mode_outlined,
                 onTap: () => _pick<ThemeMode>(
                   context,
-                  title: 'Appearance',
+                  title: L.of(context).appearance,
                   values: ThemeMode.values,
                   selected: app.themeMode,
                   labelOf: (m) => switch (m) {

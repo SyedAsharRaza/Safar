@@ -19,6 +19,7 @@ import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import '../../widgets/map/safar_map.dart';
 import 'report_review_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 enum _Step { category, issue, location, describe }
 
@@ -315,10 +316,10 @@ class _CategoryStep extends StatelessWidget {
             ),
           ),
         const SizedBox(height: Gap.sm),
-        const InfoPanel(
+        InfoPanel(
           text: AppText.privacyPromise,
           icon: Icons.lock_outline_rounded,
-          title: 'Anonymous by default',
+          title: L.of(context).anonymousByDefault,
         ),
       ],
     );
@@ -784,7 +785,7 @@ class _DescribeStepState extends State<_DescribeStep> {
           primary: FilledButton.icon(
             onPressed: widget.issue == null ? null : widget.onSubmit,
             icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-            label: const Text('Review my report'),
+            label: Text(L.of(context).reviewMyReport),
           ),
         ),
       ],

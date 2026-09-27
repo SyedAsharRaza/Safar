@@ -201,6 +201,34 @@ class SectionHeader extends StatelessWidget {
   }
 }
 
+/// A row of [StatTile]s, all rendered at the same height.
+///
+/// Laying tiles out in a plain Row lets each size itself, so a tile whose label
+/// wraps to two lines ends up visibly taller than its neighbours. IntrinsicHeight
+/// measures the tallest and stretches the rest to match.
+class StatTileRow extends StatelessWidget {
+  const StatTileRow({super.key, required this.tiles, this.spacing = Gap.sm});
+
+  final List<Widget> tiles;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    if (tiles.isEmpty) return const SizedBox.shrink();
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < tiles.length; i++) ...[
+            if (i > 0) SizedBox(width: spacing),
+            Expanded(child: tiles[i]),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 /// Small stat block used on the profile and route-detail screens.
 class StatTile extends StatelessWidget {
   const StatTile({

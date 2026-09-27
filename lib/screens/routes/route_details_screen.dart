@@ -165,34 +165,26 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                     ],
                   ),
                   const SizedBox(height: Gap.lg),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: StatTile(
+                  StatTileRow(
+                    tiles: [
+                      StatTile(
                           value: TimeUtils.minutes(route.totalMinutes),
                           label: 'Estimated time',
                           icon: Icons.schedule_rounded,
                           tone: colour,
                         ),
-                      ),
-                      const SizedBox(width: Gap.sm),
-                      Expanded(
-                        child: StatTile(
+                      StatTile(
                           value: TimeUtils.distance(route.distanceKm),
                           label: 'Distance',
                           icon: Icons.straighten_rounded,
                           tone: colour,
                         ),
-                      ),
-                      const SizedBox(width: Gap.sm),
-                      Expanded(
-                        child: StatTile(
+                      StatTile(
                           value: '${route.reports.length}',
                           label: 'Live reports',
                           icon: Icons.campaign_outlined,
                           tone: colour,
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: Gap.lg),
@@ -425,28 +417,21 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
             ],
           ),
           const SizedBox(height: Gap.lg),
-          Row(
-            children: [
-              Expanded(
-                child: StatTile(
+          StatTileRow(
+            tiles: [
+              StatTile(
                   value: '${(part.segment.baseLightingScore * 100).round()}%',
                   label: 'Baseline lighting',
                   icon: Icons.lightbulb_outline,
                   tone: AppColors.accentDeep,
                 ),
-              ),
-              const SizedBox(width: Gap.sm),
-              Expanded(
-                child: StatTile(
+              StatTile(
                   value: '${(part.segment.activityScore * 100).round()}%',
                   label: 'How busy',
                   icon: Icons.groups_outlined,
                   tone: AppColors.teal,
                 ),
-              ),
-              const SizedBox(width: Gap.sm),
-              Expanded(
-                child: StatTile(
+              StatTile(
                   value: part.extraMinutes < 1
                       ? '—'
                       : '+${part.extraMinutes.round()}m',
@@ -454,7 +439,6 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                   icon: Icons.timer_outlined,
                   tone: AppColors.awarenessModerate,
                 ),
-              ),
             ],
           ),
           if (onSegment.isNotEmpty) ...[

@@ -12,6 +12,7 @@ import '../../widgets/common/badges.dart';
 import '../../widgets/common/brand.dart';
 import '../../widgets/common/surfaces.dart';
 import '../home/app_shell.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Four-page onboarding: what it is, how reporting works, what it will not do,
 /// and the language choice.
@@ -143,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               duration: Motion.base,
                               curve: Motion.emphasized,
                             ),
-                            child: const Text('Back'),
+                            child: Text(L.of(context).back),
                           ),
                         ),
                       if (_index > 0) const SizedBox(width: Gap.md),
@@ -181,9 +182,18 @@ class _WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: Gap.page(context)),
-      child: Column(
+    // Scrollable, and centred only when there is room. A fixed Column here
+    // overflowed by 91px on a normal phone and 519px on a small one, because
+    // the content is simply taller than a short viewport.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: EdgeInsets.symmetric(
+          horizontal: Gap.page(context),
+          vertical: Gap.lg,
+        ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight - Gap.xxl),
+          child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -197,7 +207,7 @@ class _WelcomePage extends StatelessWidget {
           ),
           const SizedBox(height: Gap.lg),
           Text(
-            'Bahawalpur Safar tells you what to expect on the way.',
+            'Safar tells you what to expect on the way.',
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   color: Colors.white,
                 ),
@@ -225,6 +235,8 @@ class _WelcomePage extends StatelessWidget {
             ],
           ),
         ],
+          ),
+        ),
       ),
     );
   }
@@ -238,8 +250,8 @@ class _HowItWorksPage extends StatelessWidget {
       icon: Icons.record_voice_over_outlined,
       title: 'A resident reports what they see',
       body:
-          'In English, Urdu or Roman Urdu — "aagay gali band hai", "road par pani '
-          'khara hai", "streetlight band hai".',
+          'In English, Urdu, Roman Urdu or Punjabi — "aagay gali band hai", '
+          '"road par pani khara hai", "streetlight band hai".',
     ),
     (
       icon: Icons.auto_awesome_outlined,
@@ -374,16 +386,19 @@ class _LimitsPage extends StatelessWidget {
         vertical: Gap.lg,
       ),
       children: [
-        Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-            color: context.scheme.secondaryContainer,
-            borderRadius: Radii.allMd,
-          ),
-          child: Icon(
-            Icons.balance_outlined,
-            color: context.scheme.onSecondaryContainer,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: context.scheme.secondaryContainer,
+              borderRadius: Radii.allMd,
+            ),
+            child: Icon(
+              Icons.balance_outlined,
+              color: context.scheme.onSecondaryContainer,
+            ),
           ),
         ),
         const SizedBox(height: Gap.xl),
@@ -488,11 +503,7 @@ class _LanguagePage extends StatelessWidget {
 
   final VoidCallback onDone;
 
-  static const List<ReportLanguage> _choices = [
-    ReportLanguage.english,
-    ReportLanguage.romanUrdu,
-    ReportLanguage.urdu,
-  ];
+  static const List<ReportLanguage> _choices = ReportLanguage.selectable;
 
   @override
   Widget build(BuildContext context) {
@@ -504,16 +515,19 @@ class _LanguagePage extends StatelessWidget {
         vertical: Gap.lg,
       ),
       children: [
-        Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-            color: context.scheme.primaryContainer,
-            borderRadius: Radii.allMd,
-          ),
-          child: Icon(
-            Icons.translate_rounded,
-            color: context.scheme.onPrimaryContainer,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: context.scheme.primaryContainer,
+              borderRadius: Radii.allMd,
+            ),
+            child: Icon(
+              Icons.translate_rounded,
+              color: context.scheme.onPrimaryContainer,
+            ),
           ),
         ),
         const SizedBox(height: Gap.xl),
@@ -556,6 +570,8 @@ class _LanguagePage extends StatelessWidget {
                               'Interface and warnings in English',
                             ReportLanguage.romanUrdu =>
                               'Urdu written in Latin script — "road kharab hai"',
+                            ReportLanguage.punjabi =>
+                              'Punjabi in Shahmukhi script, as written in Punjab',
                             _ => 'Urdu script for warnings and summaries',
                           },
                           style: Theme.of(context).textTheme.bodySmall,

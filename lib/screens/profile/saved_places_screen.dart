@@ -10,6 +10,7 @@ import '../../widgets/common/badges.dart';
 import '../../widgets/common/feedback.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Saved places, with relabelling and a shortcut to route straight there.
 class SavedPlacesScreen extends StatelessWidget {
@@ -62,7 +63,7 @@ class SavedPlacesScreen extends StatelessWidget {
     final gutter = Gap.page(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved places')),
+      appBar: AppBar(title: Text(L.of(context).savedPlaces)),
       body: places.saved.isEmpty
           ? EmptyState(
               icon: Icons.bookmark_border_rounded,
@@ -154,14 +155,14 @@ class SavedPlacesScreen extends StatelessWidget {
                                     }
                                   }
                                 },
-                                itemBuilder: (context) => const [
+                                itemBuilder: (context) => [
                                   PopupMenuItem(
                                     value: 'label',
                                     child: Text('Change label'),
                                   ),
                                   PopupMenuItem(
                                     value: 'remove',
-                                    child: Text('Remove'),
+                                    child: Text(L.of(context).remove),
                                   ),
                                 ],
                               ),

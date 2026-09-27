@@ -117,6 +117,8 @@ abstract final class MockVoiceLines {
         'Ehtiyaat karein. Aagay gali band honay ki community report mili hai. Alternate route available hai.',
     'ur':
         'احتیاط کریں۔ آگے راستہ بند ہونے کی کمیونٹی رپورٹ موصول ہوئی ہے۔ متبادل راستہ دستیاب ہے۔',
+    'pa':
+        'خیال رکھو۔ اگے راہ بند ہون دی کمیونٹی رپورٹ آئی اے۔ دوجا راہ موجود اے۔',
   };
 
   static const Map<String, String> waterEnglish = {
@@ -126,6 +128,7 @@ abstract final class MockVoiceLines {
         'Ehtiyaat karein. Aagay wali road par pani jama honay ki report hai. Dhyan se chalain.',
     'ur':
         'احتیاط کریں۔ آگے سڑک پر پانی جمع ہونے کی رپورٹ ہے۔ دھیان سے چلیں۔',
+    'pa': 'خیال رکھو۔ اگے سڑک تے پانی کھلوتا ہون دی رپورٹ اے۔ دھیان نال چلو۔',
   };
 
   static const Map<String, String> lightingEnglish = {
@@ -135,11 +138,14 @@ abstract final class MockVoiceLines {
         'Note karein. Is rastay par do jagah kam roshni ki report hai. Behtar roshni wala rasta mojood hai.',
     'ur':
         'نوٹ کریں۔ اس راستے پر دو مقامات پر کم روشنی کی رپورٹ ہے۔ بہتر روشنی والا راستہ موجود ہے۔',
+    'pa':
+        'دھیان دیو۔ ایس راہ تے دو تھاواں تے گھٹ روشنی دی رپورٹ اے۔ ودھ روشنی والا راہ موجود اے۔',
   };
 
   static const Map<String, String> clearRoute = {
     'en': 'No recent community reports on this route. Travel safely.',
     'roman': 'Is rastay par koi taza report nahi hai. Safar mehfooz rahe.',
     'ur': 'اس راستے پر کوئی تازہ رپورٹ نہیں ہے۔ سفر محفوظ رہے۔',
+    'pa': 'ایس راہ تے کوئی تازہ رپورٹ نہیں۔ سفر سلامت رہوے۔',
   };
 }

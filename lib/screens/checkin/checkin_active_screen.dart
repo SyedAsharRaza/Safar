@@ -14,6 +14,7 @@ import '../../widgets/common/feedback.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import '../info/emergency_sheet.dart';
+import '../../l10n/app_localizations.dart';
 
 /// The running check-in: countdown, contacts, and the two ways out.
 class CheckinActiveScreen extends StatelessWidget {
@@ -255,14 +256,14 @@ class CheckinActiveScreen extends StatelessWidget {
             foregroundColor: Colors.white,
           ),
           icon: const Icon(Icons.check_circle_outline, size: 20),
-          label: const Text('I arrived safely'),
+          label: Text(L.of(context).iArrivedSafely),
         ),
         secondary: OutlinedButton(
           onPressed: () => _cancel(context),
           style: OutlinedButton.styleFrom(
             foregroundColor: context.scheme.error,
           ),
-          child: const Text('Cancel check-in'),
+          child: Text(L.of(context).cancelCheckin),
         ),
       ),
     );

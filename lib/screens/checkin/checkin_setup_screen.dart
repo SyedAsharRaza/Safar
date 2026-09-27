@@ -15,6 +15,7 @@ import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import 'checkin_active_screen.dart';
 import 'contacts_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Set up a safety check-in: how long, and who to notify.
 class CheckinSetupScreen extends StatefulWidget {
@@ -120,7 +121,7 @@ class _CheckinSetupScreenState extends State<CheckinSetupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Safety check-in'),
+        title: Text(L.of(context).safetyCheckin),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: () => Navigator.of(context).pop(),

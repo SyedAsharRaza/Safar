@@ -16,12 +16,13 @@ import '../../state/reports_provider.dart';
 import '../../widgets/common/feedback.dart';
 import '../../widgets/common/inputs.dart';
 import '../../widgets/common/surfaces.dart';
+import '../auth/auth_screen.dart';
 import '../checkin/contacts_screen.dart';
 import '../info/about_screen.dart';
 import '../info/help_screen.dart';
-import '../onboarding/splash_screen.dart';
 import 'saved_places_screen.dart';
 import 'settings_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Profile: anonymous identity, contribution stats, and the way into settings.
 class ProfileScreen extends StatelessWidget {
@@ -68,12 +69,15 @@ class ProfileScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(profile.handle, style: t.headlineSmall),
+                    Text(
+                      app.hasAccount ? app.displayName : profile.handle,
+                      style: t.headlineSmall,
+                    ),
                     const SizedBox(height: 2),
                     Text(
-                      profile.isAnonymous
-                          ? 'Anonymous · joined ${TimeUtils.dayMonth(profile.joinedAt)}'
-                          : 'Joined ${TimeUtils.dayMonth(profile.joinedAt)}',
+                      app.hasAccount
+                          ? 'Account · ${app.account?['phone'] ?? ''}'
+                          : 'Anonymous · joined ${TimeUtils.dayMonth(profile.joinedAt)}',
                       style: t.bodySmall,
                     ),
                   ],
@@ -89,13 +93,32 @@ class ProfileScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: Gap.lg),
-          const InfoPanel(
-            text:
-                'You are signed in anonymously. Your reports carry no name, and '
-                'nothing links them to your identity.',
-            icon: Icons.visibility_off_outlined,
-            dense: true,
-          ),
+          if (app.hasAccount)
+            const InfoPanel(
+              text:
+                  'Your reports are still published anonymously. Other travellers '
+                  'never see your name or number — the account only keeps your '
+                  'history if you change phone.',
+              icon: Icons.verified_user_outlined,
+              tone: AppColors.teal,
+              dense: true,
+            )
+          else
+            InfoPanel(
+              title: 'You are anonymous',
+              text:
+                  'Everything works without an account. Adding one keeps your '
+                  'reports and saved places if you change phone.',
+              icon: Icons.visibility_off_outlined,
+              action: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  SlideUpRoute(
+                    child: const AuthScreen(initialMode: AuthMode.signUp),
+                  ),
+                ),
+                child: const Text('Create an account'),
+              ),
+            ),
 
           // --- Contribution tier ---------------------------------------------------
           const SizedBox(height: Gap.xl),
@@ -103,33 +126,25 @@ class ProfileScreen extends StatelessWidget {
 
           // --- Stats -----------------------------------------------------------------
           const SizedBox(height: Gap.lg),
-          Row(
-            children: [
-              Expanded(
-                child: StatTile(
+          StatTileRow(
+            tiles: [
+              StatTile(
                   value: '${profile.reportsSubmitted}',
                   label: 'Reports made',
                   icon: Icons.campaign_outlined,
                 ),
-              ),
-              const SizedBox(width: Gap.sm),
-              Expanded(
-                child: StatTile(
+              StatTile(
                   value: '${profile.confirmationsGiven}',
                   label: 'Signals confirmed',
                   icon: Icons.how_to_reg_outlined,
                   tone: AppColors.teal,
                 ),
-              ),
-              const SizedBox(width: Gap.sm),
-              Expanded(
-                child: StatTile(
+              StatTile(
                   value: '${profile.tripsCompared}',
                   label: 'Trips compared',
                   icon: Icons.alt_route_rounded,
                   tone: AppColors.accentDeep,
                 ),
-              ),
             ],
           ),
 
@@ -139,7 +154,7 @@ class ProfileScreen extends StatelessWidget {
             title: 'Your stuff',
             children: [
               SettingRow(
-                title: 'Saved places',
+                title: L.of(context).savedPlaces,
                 subtitle: places.saved.isEmpty
                     ? 'Nothing saved yet'
                     : '${places.saved.length} saved',
@@ -148,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
                     .push(SlideRoute(child: const SavedPlacesScreen())),
               ),
               SettingRow(
-                title: 'Trusted contacts',
+                title: L.of(context).trustedContacts,
                 subtitle: checkin.contacts.isEmpty
                     ? 'None added'
                     : '${checkin.contacts.length} contact${checkin.contacts.length == 1 ? '' : 's'}',
@@ -158,7 +173,7 @@ class ProfileScreen extends StatelessWidget {
                     .push(SlideRoute(child: const ContactsScreen())),
               ),
               SettingRow(
-                title: 'My reports',
+                title: L.of(context).myReports,
                 subtitle: '${reports.mine.length} submitted',
                 icon: Icons.history_rounded,
                 tone: AppColors.accentDeep,
@@ -176,20 +191,20 @@ class ProfileScreen extends StatelessWidget {
             title: 'Preferences',
             children: [
               SettingRow(
-                title: 'Language',
+                title: L.of(context).language,
                 value: app.language.nativeLabel,
                 icon: Icons.translate_rounded,
                 onTap: () => _languageSheet(context, app),
               ),
               SettingRow(
-                title: 'Voice warnings',
+                title: L.of(context).voiceWarnings,
                 subtitle: 'Short spoken alerts before you set off',
                 icon: Icons.volume_up_outlined,
                 switchValue: app.voiceWarnings,
                 onSwitch: app.toggleVoiceWarnings,
               ),
               SettingRow(
-                title: 'Appearance',
+                title: L.of(context).appearance,
                 value: switch (app.themeMode) {
                   ThemeMode.light => 'Light',
                   ThemeMode.dark => 'Dark',
@@ -219,36 +234,48 @@ class ProfileScreen extends StatelessWidget {
                     .push(SlideRoute(child: const HelpScreen())),
               ),
               SettingRow(
-                title: 'About Bahawalpur Safar',
+                title: 'About Safar',
                 icon: Icons.info_outline_rounded,
                 onTap: () => Navigator.of(context)
                     .push(SlideRoute(child: const AboutScreen())),
               ),
-              SettingRow(
-                title: 'Sign out',
-                subtitle: 'Returns to onboarding',
-                icon: Icons.logout_rounded,
-                destructive: true,
-                onTap: () async {
-                  final ok = await confirmAction(
-                    context,
-                    title: 'Sign out?',
-                    message:
-                        'You will go back to the onboarding screens. Nothing is '
-                        'deleted — this prototype keeps its demo data.',
-                    confirmLabel: 'Sign out',
-                    destructive: true,
-                    icon: Icons.logout_rounded,
-                  );
-                  if (ok && context.mounted) {
-                    context.read<AppState>().signOut();
-                    Navigator.of(context).pushAndRemoveUntil(
-                      FadeScaleRoute(child: const SplashScreen()),
-                      (route) => false,
+              if (app.hasAccount)
+                SettingRow(
+                  title: L.of(context).signOut,
+                  subtitle: 'Return to anonymous use on this phone',
+                  icon: Icons.logout_rounded,
+                  destructive: true,
+                  onTap: () async {
+                    final ok = await confirmAction(
+                      context,
+                      title: 'Sign out?',
+                      message:
+                          'You will keep using Safar anonymously. Your reports '
+                          'stay on your account and come back when you sign in.',
+                      confirmLabel: 'Sign out',
+                      destructive: true,
+                      icon: Icons.logout_rounded,
                     );
-                  }
-                },
-              ),
+                    if (!ok || !context.mounted) return;
+                    final reports = context.read<ReportsProvider>();
+                    await reports.api.clearSession();
+                    if (!context.mounted) return;
+                    context.read<AppState>().signOutAccount();
+                    await reports.load();
+                    if (context.mounted) {
+                      Toast.show(context, 'Signed out. Still reporting anonymously.');
+                    }
+                  },
+                )
+              else
+                SettingRow(
+                  title: L.of(context).signIn,
+                  subtitle: 'Bring reports from another phone',
+                  icon: Icons.login_rounded,
+                  onTap: () => Navigator.of(context).push(
+                    SlideUpRoute(child: const AuthScreen()),
+                  ),
+                ),
             ],
           ),
 
@@ -278,16 +305,12 @@ class ProfileScreen extends StatelessWidget {
   void _languageSheet(BuildContext context, AppState app) {
     showSafarSheet<void>(
       context,
-      title: 'Language',
+      title: L.of(context).language,
       subtitle: 'Sets voice warnings and prompt wording.',
       scrollable: false,
       child: Column(
         children: [
-          for (final l in [
-            ReportLanguage.english,
-            ReportLanguage.romanUrdu,
-            ReportLanguage.urdu,
-          ])
+          for (final l in ReportLanguage.selectable)
             RadioListTile<ReportLanguage>(
               value: l,
               // ignore: deprecated_member_use
@@ -309,7 +332,7 @@ class ProfileScreen extends StatelessWidget {
   void _themeSheet(BuildContext context, AppState app) {
     showSafarSheet<void>(
       context,
-      title: 'Appearance',
+      title: L.of(context).appearance,
       scrollable: false,
       child: Column(
         children: [

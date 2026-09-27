@@ -9,6 +9,7 @@ import '../../widgets/common/badges.dart';
 import '../../widgets/common/feedback.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Manage trusted contacts. Numbers are stored locally in this prototype and
 /// never leave the device.
@@ -109,7 +110,7 @@ class ContactsScreen extends StatelessWidget {
     final gutter = Gap.page(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trusted contacts')),
+      appBar: AppBar(title: Text(L.of(context).trustedContacts)),
       body: checkin.contacts.isEmpty
           ? EmptyState(
               icon: Icons.person_add_alt_1_outlined,
@@ -125,7 +126,7 @@ class ContactsScreen extends StatelessWidget {
               children: [
                 const InfoPanel(
                   text:
-                      'Contacts are stored on this device only. Bahawalpur Safar '
+                      'Contacts are stored on this device only. Safar '
                       'does not upload your contact list.',
                   icon: Icons.lock_outline_rounded,
                   dense: true,
@@ -227,9 +228,9 @@ class ContactsScreen extends StatelessWidget {
                                   value: 'primary',
                                   child: Text('Make primary'),
                                 ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'remove',
-                                child: Text('Remove'),
+                                child: Text(L.of(context).remove),
                               ),
                             ],
                           ),

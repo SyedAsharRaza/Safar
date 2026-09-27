@@ -224,32 +224,24 @@ class _MyReportsTab extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.fromLTRB(gutter, Gap.lg, gutter, 120),
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: StatTile(
+        StatTileRow(
+          tiles: [
+            StatTile(
                 value: '${mine.length}',
                 label: 'Total reports',
                 icon: Icons.campaign_outlined,
               ),
-            ),
-            const SizedBox(width: Gap.sm),
-            Expanded(
-              child: StatTile(
+            StatTile(
                 value: '${live.length}',
                 label: 'Live now',
                 icon: Icons.sensors_rounded,
               ),
-            ),
-            const SizedBox(width: Gap.sm),
-            Expanded(
-              child: StatTile(
+            StatTile(
                 value:
                     '${mine.where((r) => r.status == ReportStatus.corroborated).length}',
                 label: 'Confirmed by others',
                 icon: Icons.verified_outlined,
               ),
-            ),
           ],
         ),
 

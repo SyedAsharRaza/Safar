@@ -13,6 +13,7 @@ import '../../widgets/common/feedback.dart';
 import '../../widgets/common/surfaces.dart';
 import '../../widgets/reports/report_card.dart';
 import 'report_detail_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Confirmation after publishing. Two variants: published, or withheld because
 /// the report identified a person.
@@ -222,7 +223,7 @@ class _ReportSuccessScreenState extends State<ReportSuccessScreen>
       bottomNavigationBar: StickyActionBar(
         primary: FilledButton(
           onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
-          child: const Text('Done'),
+          child: Text(L.of(context).done),
         ),
         secondary: widget.withheld
             ? null

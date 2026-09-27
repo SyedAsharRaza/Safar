@@ -51,3 +51,9 @@ app.*.map.json
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 *adminsdk*.json
+
+# Release signing — as sensitive as a password
+android/key.properties
+*.jks
+*.keystore
+!android/app/debug.keystore

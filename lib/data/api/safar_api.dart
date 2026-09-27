@@ -57,6 +57,83 @@ class SafarApi {
     return true;
   }
 
+  /// Creates an account, upgrading this device's anonymous user in place so
+  /// the reports already filed from this phone are kept.
+  Future<Map<String, dynamic>> register({
+    required String phone,
+    required String password,
+    String? displayName,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final result = await _client.post('/auth/register', body: {
+      'phone': phone,
+      'password': password,
+      if (displayName != null && displayName.isNotEmpty)
+        'displayName': displayName,
+      if (prefs.getString(_deviceKey) != null)
+        'deviceId': prefs.getString(_deviceKey),
+    });
+    final data = result['data'] as Map<String, dynamic>;
+    final token = data['token'] as String?;
+    if (token != null) {
+      _client.setToken(token);
+      await prefs.setString(_tokenKey, token);
+    }
+    return data['user'] as Map<String, dynamic>? ?? const {};
+  }
+
+  /// Signs in to an existing account, from any device.
+  Future<Map<String, dynamic>> login({
+    required String phone,
+    required String password,
+  }) async {
+    final result = await _client.post('/auth/login', body: {
+      'phone': phone,
+      'password': password,
+    });
+    final data = result['data'] as Map<String, dynamic>;
+    final token = data['token'] as String?;
+    if (token != null) {
+      _client.setToken(token);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_tokenKey, token);
+    }
+    return data['user'] as Map<String, dynamic>? ?? const {};
+  }
+
+  /// Current account, or null when the session is gone.
+  Future<Map<String, dynamic>?> currentUser() async {
+    try {
+      final result = await _client.get('/auth/me');
+      final data = result['data'] as Map<String, dynamic>;
+      return data['user'] as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Reverse geocodes a point into a human address.
+  Future<Map<String, dynamic>?> reverseGeocode(GeoPoint point) async {
+    try {
+      final result = await _client.get('/geocode/reverse', query: {
+        'lat': point.lat,
+        'lng': point.lng,
+      });
+      final data = result['data'] as Map<String, dynamic>;
+      return data['address'] as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Searches places, blending curated landmarks with live geocoding.
+  Future<List<Map<String, dynamic>>> searchPlaces(String query) async {
+    final result = await _client.get('/places', query: {'q': query});
+    final data = result['data'] as Map<String, dynamic>;
+    return (data['places'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>();
+  }
+
   Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
@@ -86,6 +163,7 @@ class SafarApi {
     final list = (data['reports'] as List<dynamic>? ?? const []);
     return list
         .map((e) => reportFromJson(e as Map<String, dynamic>))
+        .where(isPlausibleLocation)
         .toList(growable: false);
   }
 
@@ -95,6 +173,7 @@ class SafarApi {
     final list = (data['reports'] as List<dynamic>? ?? const []);
     return list
         .map((e) => reportFromJson(e as Map<String, dynamic>, isMine: true))
+        .where(isPlausibleLocation)
         .toList(growable: false);
   }
 
@@ -177,7 +256,7 @@ class SafarApi {
   Future<void> sendTestNotification() => _client.post(
         '/notifications/test',
         body: {
-          'title': 'Bahawalpur Safar',
+          'title': 'Safar',
           'body': 'Test notification — community signals are live.',
         },
       );
@@ -226,6 +305,17 @@ SafetyReport reportFromJson(Map<String, dynamic> json, {bool isMine = false}) {
     reporterHandle: isMine ? 'You' : 'Anonymous resident',
   );
 }
+
+/// Guards against a report landing far outside the covered area.
+///
+/// The server rejects these on submission now, but older rows may exist and a
+/// future client could get it wrong. Dropping them here means one bad record
+/// cannot skew the map for everyone.
+bool isPlausibleLocation(SafetyReport r) =>
+    r.location.lat >= 28.6 &&
+    r.location.lat <= 30.2 &&
+    r.location.lng >= 70.6 &&
+    r.location.lng <= 72.8;
 
 ReportStatus _statusFromWire(String? wire) => switch (wire) {
       'corroborated' => ReportStatus.corroborated,

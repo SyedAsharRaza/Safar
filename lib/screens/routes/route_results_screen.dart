@@ -20,6 +20,7 @@ import '../../widgets/routes/route_card.dart';
 import '../report/report_detail_screen.dart';
 import '../report/report_flow_screen.dart';
 import 'route_details_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Route comparison: map on top, sortable route cards in a draggable sheet.
 class RouteResultsScreen extends StatefulWidget {
@@ -150,7 +151,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Close'),
+                      child: Text(L.of(context).close),
                     ),
                   ),
                   const SizedBox(width: Gap.md),

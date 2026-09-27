@@ -87,7 +87,8 @@ class GoogleMapViewState extends State<GoogleMapView> {
       _rebuildMarkers();
     }
     if (oldWidget.bounds != widget.bounds ||
-        oldWidget.obscuredBottom != widget.obscuredBottom) {
+        oldWidget.obscuredBottom != widget.obscuredBottom ||
+        oldWidget.reports.length != widget.reports.length) {
       _fitBounds();
     }
   }
@@ -164,14 +165,26 @@ class GoogleMapViewState extends State<GoogleMapView> {
     if (mounted) setState(() => _markers = markers);
   }
 
+  /// Area the app covers, matching the server's own check.
+  ///
+  /// The camera fits only points inside it. One stray coordinate — a
+  /// mis-tapped pin, a bad row from an older client — would otherwise stretch
+  /// the bounds across continents and zoom the map out to the ocean.
+  static bool _inServiceArea(GeoPoint p) =>
+      p.lat >= 28.6 && p.lat <= 30.2 && p.lng >= 70.6 && p.lng <= 72.8;
+
   Future<void> _fitBounds() async {
     final controller = _controller;
     if (controller == null) return;
     final points = <LatLng>[
-      for (final line in widget.routeLines) ...line.points.map(_ll),
-      for (final r in widget.reports) _ll(r.location),
-      if (widget.origin != null) _ll(widget.origin!),
-      if (widget.destination != null) _ll(widget.destination!),
+      for (final line in widget.routeLines)
+        ...line.points.where(_inServiceArea).map(_ll),
+      for (final r in widget.reports)
+        if (_inServiceArea(r.location)) _ll(r.location),
+      if (widget.origin != null && _inServiceArea(widget.origin!))
+        _ll(widget.origin!),
+      if (widget.destination != null && _inServiceArea(widget.destination!))
+        _ll(widget.destination!),
     ];
     if (points.isEmpty) {
       points.addAll([

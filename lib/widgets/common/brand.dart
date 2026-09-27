@@ -100,6 +100,9 @@ class _MarkPainter extends CustomPainter {
 }
 
 /// Wordmark with the tagline, used on the splash and onboarding screens.
+///
+/// The product is "Safar" — short, and the same word in Urdu, Punjabi and
+/// Roman Urdu. The city name lives in the tagline instead of the mark.
 class SafarWordmark extends StatelessWidget {
   const SafarWordmark({
     super.key,
@@ -120,7 +123,7 @@ class SafarWordmark extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Bahawalpur Safar',
+          'Safar',
           textAlign: alignment == CrossAxisAlignment.center
               ? TextAlign.center
               : TextAlign.start,
@@ -130,9 +133,9 @@ class SafarWordmark extends StatelessWidget {
               ),
         ),
         if (showTagline) ...[
-          const SizedBox(height: Gap.sm),
+          const SizedBox(height: Gap.xs),
           Text(
-            'Know the road before you take it.',
+            'Bahawalpur · Know the road before you take it.',
             textAlign: alignment == CrossAxisAlignment.center
                 ? TextAlign.center
                 : TextAlign.start,

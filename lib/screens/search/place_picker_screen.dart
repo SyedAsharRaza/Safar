@@ -15,6 +15,7 @@ import '../../widgets/common/feedback.dart';
 import '../../widgets/common/inputs.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Destination picker. Returns the chosen [Place] via `Navigator.pop`.
 ///
@@ -181,7 +182,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
         if (places.saved.isNotEmpty) ...[
           const SizedBox(height: Gap.xxl),
           SectionHeader(
-            title: 'Saved places',
+            title: L.of(context).savedPlaces,
             padding: const EdgeInsets.only(bottom: Gap.md),
             action: TextButton(
               onPressed: () {
@@ -204,7 +205,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
         if (places.recent.isNotEmpty) ...[
           const SizedBox(height: Gap.xxl),
           SectionHeader(
-            title: 'Recent',
+            title: L.of(context).recent,
             padding: const EdgeInsets.only(bottom: Gap.md),
             action: TextButton(
               onPressed: () {
@@ -234,8 +235,8 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
           ),
 
         const SizedBox(height: Gap.xxl),
-        const SectionHeader(
-          title: 'Popular in Bahawalpur',
+        SectionHeader(
+          title: L.of(context).popularInBwp,
           padding: EdgeInsets.only(bottom: Gap.md),
         ),
         for (final p in MockPlaces.all
@@ -476,7 +477,7 @@ class _SavedPlacesQuickList extends StatelessWidget {
     final gutter = Gap.page(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved places')),
+      appBar: AppBar(title: Text(L.of(context).savedPlaces)),
       body: places.saved.isEmpty
           ? EmptyState(
               icon: Icons.bookmark_border_rounded,

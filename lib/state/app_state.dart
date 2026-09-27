@@ -102,14 +102,58 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void signIn() {
+  /// Account details when registered, null while anonymous.
+  Map<String, dynamic>? _account;
+  Map<String, dynamic>? get account => _account;
+
+  /// True only for a registered account — anonymous users are "signed in" to
+  /// the app but have no account, and the UI must not conflate the two.
+  bool get hasAccount => _account?['accountType'] == 'registered';
+
+  String get displayName =>
+      (_account?['displayName'] as String?)?.trim().isNotEmpty == true
+          ? _account!['displayName'] as String
+          : _profile.handle;
+
+  void signIn({Map<String, dynamic>? account}) {
     _signedIn = true;
+    if (account != null) {
+      _account = account;
+      final handle = account['handle'] as String?;
+      if (handle != null) {
+        _profile = UserProfile(
+          handle: handle,
+          joinedAt: DateTime.tryParse(account['createdAt'] as String? ?? '') ??
+              _profile.joinedAt,
+          reportsSubmitted:
+              (account['stats']?['reportsSubmitted'] as num?)?.toInt() ??
+                  _profile.reportsSubmitted,
+          confirmationsGiven:
+              (account['stats']?['confirmationsGiven'] as num?)?.toInt() ??
+                  _profile.confirmationsGiven,
+          reportsHelpful: _profile.reportsHelpful,
+          tripsCompared:
+              (account['stats']?['tripsCompared'] as num?)?.toInt() ??
+                  _profile.tripsCompared,
+          isAnonymous: account['accountType'] != 'registered',
+          homeArea: account['homeArea'] as String? ?? _profile.homeArea,
+        );
+      }
+    }
+    notifyListeners();
+  }
+
+  /// Returns to anonymous use. Reports stay attached to the account on the
+  /// server, so signing back in restores them.
+  void signOutAccount() {
+    _account = null;
     notifyListeners();
   }
 
   void signOut() {
     _signedIn = false;
     _onboarded = false;
+    _account = null;
     notifyListeners();
   }
 
@@ -147,10 +191,14 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Locale for MaterialApp, derived from the chosen language.
+  Locale get locale => _language.locale;
+
   /// The voice-warning language key used by [MockVoiceLines].
   String get voiceKey => switch (_language) {
         ReportLanguage.urdu => 'ur',
         ReportLanguage.romanUrdu => 'roman',
+        ReportLanguage.punjabi => 'pa',
         _ => 'en',
       };
 }

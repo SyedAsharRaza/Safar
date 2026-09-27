@@ -293,6 +293,7 @@ enum ReportLanguage {
   english('english', 'English', 'English'),
   urdu('urdu', 'Urdu', 'اردو'),
   romanUrdu('roman_urdu', 'Roman Urdu', 'Roman Urdu'),
+  punjabi('punjabi', 'Punjabi', 'پنجابی'),
   unknown('unknown', 'Unknown', 'Unknown');
 
   const ReportLanguage(this.wire, this.label, this.nativeLabel);
@@ -302,6 +303,28 @@ enum ReportLanguage {
 
   static ReportLanguage fromWire(String w) =>
       values.firstWhere((e) => e.wire == w, orElse: () => ReportLanguage.unknown);
+
+  /// Languages a user can pick for the interface. `unknown` is a
+  /// classification outcome, not something anyone chooses.
+  static const List<ReportLanguage> selectable = [
+    ReportLanguage.english,
+    ReportLanguage.urdu,
+    ReportLanguage.romanUrdu,
+    ReportLanguage.punjabi,
+  ];
+
+  /// Urdu and Punjabi are written right-to-left in Pakistan; Roman Urdu uses
+  /// Latin script and reads left-to-right.
+  bool get isRtl =>
+      this == ReportLanguage.urdu || this == ReportLanguage.punjabi;
+
+  Locale get locale => switch (this) {
+        ReportLanguage.urdu => const Locale('ur'),
+        ReportLanguage.punjabi => const Locale('pa'),
+        ReportLanguage.romanUrdu =>
+          const Locale.fromSubtags(languageCode: 'ur', scriptCode: 'Latn'),
+        _ => const Locale('en'),
+      };
 }
 
 /// Confidence banding so the UI never prints a raw probability as a claim.

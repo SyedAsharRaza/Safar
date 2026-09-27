@@ -19,6 +19,7 @@ import '../../widgets/common/feedback.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import 'report_success_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// "We understood this as…" — the review gate before anything is published.
 ///
@@ -563,7 +564,7 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
           Expanded(
             child: OutlinedButton(
               onPressed: _submitting ? null : _changeCategory,
-              child: const Text('Change category'),
+              child: Text(L.of(context).changeCategory),
             ),
           ),
           const SizedBox(width: Gap.md),

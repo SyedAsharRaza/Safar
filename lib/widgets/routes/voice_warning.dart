@@ -2,14 +2,18 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/mock/mock_misc.dart';
 import '../../models/route_option.dart';
 import '../../models/taxonomy.dart';
+import '../../core/theme/app_colors.dart';
 import '../common/badges.dart';
+import '../common/surfaces.dart';
 import '../common/inputs.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Picks the warning script that matches what is actually on the route.
 Map<String, String> voiceLineFor(RouteOption route) {
@@ -23,10 +27,14 @@ Map<String, String> voiceLineFor(RouteOption route) {
 
 /// The voice-warning player.
 ///
-/// The blueprint calls for Flutter TTS here. This UI-only build shows the same
-/// short scripts in English, Roman Urdu and Urdu with a live waveform and word
-/// highlighting, so the multilingual warning is demonstrable with no audio
-/// dependency. Wiring `flutter_tts` in later replaces only [_speak].
+/// Speaks the warning aloud through the device's text-to-speech engine, with a
+/// waveform and word highlighting so the warning is followable with the sound
+/// off too.
+///
+/// Engine coverage varies by handset: many Android devices have no Urdu or
+/// Punjabi voice installed. Rather than failing silently, the player falls back
+/// to Hindi (acoustically close for Urdu) and then to the device default, and
+/// tells the user when it is reading a script in a substitute voice.
 class VoiceWarningSheet extends StatefulWidget {
   const VoiceWarningSheet({
     super.key,
@@ -54,15 +62,17 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
     duration: const Duration(milliseconds: 1400),
   );
 
+  final FlutterTts _tts = FlutterTts();
+
   Timer? _progress;
   int _spokenWords = 0;
   bool _playing = false;
 
-  static const List<ReportLanguage> _choices = [
-    ReportLanguage.english,
-    ReportLanguage.romanUrdu,
-    ReportLanguage.urdu,
-  ];
+  /// Set when the requested language has no installed voice.
+  String? _voiceNotice;
+  bool _ttsReady = false;
+
+  static const List<ReportLanguage> _choices = ReportLanguage.selectable;
 
   String get _text => widget.lines[_key(_language)] ?? widget.lines['en'] ?? '';
 
@@ -70,6 +80,7 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
 
   static String _key(ReportLanguage l) => switch (l) {
         ReportLanguage.urdu => 'ur',
+        ReportLanguage.punjabi => 'pa',
         ReportLanguage.romanUrdu => 'roman',
         _ => 'en',
       };
@@ -77,27 +88,94 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
   @override
   void initState() {
     super.initState();
-    // Auto-play once when opened: a warning the traveller has to press for is
-    // not much of a warning.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _speak());
+    _initTts().then((_) {
+      // Auto-play once when opened: a warning the traveller has to press for is
+      // not much of a warning.
+      if (mounted) _speak();
+    });
+  }
+
+  /// BCP-47 tags the TTS engine understands, best first.
+  static List<String> _ttsCandidates(ReportLanguage l) => switch (l) {
+        ReportLanguage.urdu => ['ur-PK', 'ur', 'hi-IN'],
+        ReportLanguage.punjabi => ['pa-IN', 'pa', 'ur-PK', 'hi-IN'],
+        ReportLanguage.romanUrdu => ['hi-IN', 'en-IN', 'en-US'],
+        _ => ['en-IN', 'en-US', 'en-GB'],
+      };
+
+  Future<void> _initTts() async {
+    try {
+      await _tts.setSpeechRate(0.45);
+      await _tts.setVolume(1.0);
+      await _tts.setPitch(1.0);
+      _tts.setCompletionHandler(() {
+        if (mounted) setState(() => _playing = false);
+      });
+      _ttsReady = true;
+    } catch (_) {
+      _ttsReady = false;
+    }
+  }
+
+  /// Picks the best available voice, noting when it is a substitute.
+  Future<String?> _applyLanguage() async {
+    final candidates = _ttsCandidates(_language);
+    for (final tag in candidates) {
+      try {
+        final available = await _tts.isLanguageAvailable(tag);
+        if (available == true) {
+          await _tts.setLanguage(tag);
+          final exact = tag.startsWith(candidates.first.split('-').first);
+          return exact ? null : tag;
+        }
+      } catch (_) {
+        // Try the next candidate.
+      }
+    }
+    return 'unavailable';
   }
 
   @override
   void dispose() {
     _progress?.cancel();
+    _tts.stop();
     _wave.dispose();
     super.dispose();
   }
 
-  void _speak() {
+  Future<void> _speak() async {
     _progress?.cancel();
+    await _tts.stop();
+
+    String? notice;
+    if (_ttsReady) {
+      final substitute = await _applyLanguage();
+      if (substitute == 'unavailable') {
+        notice = 'No installed voice for ${_language.label}. '
+            'Showing the text only.';
+      } else if (substitute != null) {
+        notice = 'Read in the closest available voice — your device has no '
+            '${_language.label} voice installed.';
+      }
+    } else {
+      notice = 'Text-to-speech is unavailable on this device.';
+    }
+
+    if (!mounted) return;
     setState(() {
       _playing = true;
       _spokenWords = 0;
+      _voiceNotice = notice;
     });
     _wave.repeat();
 
-    // ~210 ms per word approximates a calm speaking pace.
+    if (_ttsReady && notice != 'No installed voice for ${_language.label}. '
+        'Showing the text only.') {
+      _tts.speak(_text);
+    }
+
+    // Word highlighting runs alongside the audio so the warning is followable
+    // with the sound off. ~210 ms per word matches a calm speaking pace.
     _progress = Timer.periodic(const Duration(milliseconds: 210), (timer) {
       if (!mounted) return timer.cancel();
       if (_spokenWords >= _words.length) {
@@ -110,9 +188,11 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
     });
   }
 
-  void _stop() {
+  Future<void> _stop() async {
     _progress?.cancel();
+    await _tts.stop();
     _wave.stop();
+    if (!mounted) return;
     setState(() {
       _playing = false;
       _spokenWords = _words.length;
@@ -122,7 +202,8 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    final isUrdu = _language == ReportLanguage.urdu;
+    // Urdu and Punjabi both render right-to-left.
+    final isRtl = _language.isRtl;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(Gap.xl, Gap.xs, Gap.xl, Gap.xl),
@@ -180,15 +261,15 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
 
           // --- Script with spoken words highlighted ----------------------------
           Directionality(
-            textDirection: isUrdu ? TextDirection.rtl : TextDirection.ltr,
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             child: RichText(
-              textAlign: isUrdu ? TextAlign.right : TextAlign.left,
+              textAlign: isRtl ? TextAlign.right : TextAlign.left,
               text: TextSpan(
                 children: [
                   for (var i = 0; i < _words.length; i++)
                     TextSpan(
                       text: '${_words[i]} ',
-                      style: (isUrdu ? t.headlineSmall : t.titleLarge)?.copyWith(
+                      style: (isRtl ? t.headlineSmall : t.titleLarge)?.copyWith(
                         height: 1.6,
                         fontWeight: FontWeight.w600,
                         color: i < _spokenWords
@@ -216,14 +297,22 @@ class _VoiceWarningSheetState extends State<VoiceWarningSheet>
               const SizedBox(width: Gap.md),
               OutlinedButton(
                 onPressed: () => Navigator.of(context).maybePop(),
-                child: const Text('Done'),
+                child: Text(L.of(context).done),
               ),
             ],
           ),
           const SizedBox(height: Gap.md),
+          if (_voiceNotice != null) ...[
+            InfoPanel(
+              text: _voiceNotice!,
+              icon: Icons.record_voice_over_outlined,
+              tone: AppColors.awarenessModerate,
+              dense: true,
+            ),
+            const SizedBox(height: Gap.sm),
+          ],
           Text(
-            'Warnings stay short so they are usable while travelling. Audio '
-            'playback is simulated in this UI build.',
+            'Warnings stay short so they are usable while travelling.',
             style: t.labelMedium?.copyWith(color: context.tokens.textTertiary),
           ),
         ],

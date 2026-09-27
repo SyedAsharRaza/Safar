@@ -7,6 +7,7 @@ import '../../core/utils/time_utils.dart';
 import '../../models/route_option.dart';
 import '../common/badges.dart';
 import '../common/surfaces.dart';
+import '../../l10n/app_localizations.dart';
 
 Color routeColourFor(RouteFlavour f) => switch (f) {
       RouteFlavour.fastest => AppColors.routeFastest,
@@ -97,7 +98,7 @@ class RouteCard extends StatelessWidget {
                         if (route.isRecommended) ...[
                           const SizedBox(width: Gap.sm - 2),
                           Pill(
-                            label: 'Suggested',
+                            label: L.of(context).suggested,
                             color: context.scheme.tertiary,
                             dense: true,
                           ),
@@ -190,7 +191,7 @@ class RouteCard extends StatelessWidget {
               ),
               if (!route.avoidsBlockage)
                 Pill(
-                  label: 'Passes a blockage',
+                  label: L.of(context).passesBlockage,
                   icon: Icons.block_outlined,
                   color: context.scheme.error,
                   dense: true,
@@ -266,7 +267,7 @@ class RouteCard extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: onDetails,
                 icon: const Icon(Icons.map_outlined, size: 16),
-                label: const Text('See what is on this route'),
+                label: Text(L.of(context).seeWhatIsOnRoute),
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   foregroundColor: colour,
